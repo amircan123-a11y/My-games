@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>המשחקים שלי 🎲</title>
-        <meta name="mobile-web-app-capable" content="yes">
+    <!-- הגדרות לאפליקציית רשת -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#6200ea">
@@ -26,9 +27,32 @@
             text-align: center;
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative; /* הוסף כדי לאפשר מיקום חופשי לכפתור העריכה */
         }
         .header h1 { margin: 0; font-size: 24px; }
         
+        /* כפתור עריכה למעלה משמאל */
+        .edit-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .edit-btn.active-edit {
+            background: rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+        }
+
         .tabs {
             display: flex;
             flex-wrap: wrap; 
@@ -78,7 +102,7 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 12px;
-            padding-bottom: 80px; /* הוספנו מרווח כדי שהכפתור הצף לא יסתיר את המשחק האחרון */
+            padding-bottom: 80px; 
         }
         .game-card {
             background: white;
@@ -142,8 +166,31 @@
             margin-right: 5px;
         }
 
-        /* ---------------- CSS חדש: כפתור צף וחלונית קופצת ---------------- */
-        
+        /* סגנונות מצב עריכה בכרטיסיות */
+        .edit-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+        }
+        .edit-actions select {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            font-family: inherit;
+        }
+        .edit-actions .delete-btn {
+            background-color: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #ffcdd2;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
         /* כפתור צף */
         .fab {
             position: fixed;
@@ -151,7 +198,7 @@
             right: 25px;
             width: 60px;
             height: 60px;
-            background-color: #6200ea; /* הותאם לצבע האפליקציה שלך */
+            background-color: #6200ea; 
             color: white;
             border: none;
             border-radius: 50%;
@@ -195,7 +242,7 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             position: relative;
             direction: rtl; 
-            max-height: 85vh; /* מונע גלישה מחוץ למסך */
+            max-height: 85vh; 
             overflow-y: auto;
         }
 
@@ -215,25 +262,14 @@
             line-height: 1;
         }
 
-        .close-button:hover {
-            color: #000;
-        }
-
         /* עיצוב הטופס */
         .form-group {
             margin-bottom: 15px;
             display: flex;
             flex-direction: column;
         }
-
-        .form-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .half {
-            flex: 1;
-        }
+        .form-row { display: flex; gap: 10px; }
+        .half { flex: 1; }
 
         .modal-content label {
             margin-bottom: 5px;
@@ -241,7 +277,6 @@
             font-size: 14px;
             color: #374151;
         }
-
         .modal-content input, .modal-content select, .modal-content textarea {
             padding: 10px;
             border: 1px solid #d1d5db;
@@ -251,9 +286,8 @@
             box-sizing: border-box;
             font-family: inherit;
         }
-
         .btn-primary {
-            background-color: #4CAF50; /* הותאם לצבע הכפתור האקראי */
+            background-color: #4CAF50;
             color: white;
             padding: 12px;
             border: none;
@@ -264,7 +298,6 @@
             width: 100%;
             margin-top: 10px;
         }
-
         .btn-secondary {
             background-color: #e5e7eb;
             color: #374151;
@@ -275,15 +308,12 @@
             cursor: pointer;
             margin-top: 5px;
         }
-
-        .btn-secondary:hover {
-            background-color: #d1d5db;
-        }
     </style>
 </head>
 <body>
 
     <div class="header">
+        <button id="edit-btn" class="edit-btn" onclick="toggleEditMode()" title="מצב עריכה">✏️</button>
         <h1>המשחקים שלי 🎲</h1>
     </div>
 
@@ -297,8 +327,7 @@
 
     <button id="random-btn" class="random-btn" onclick="pickRandomGame()">🎲 בחר לי משחק אקראי מהמועדפים!</button>
 
-    <div id="games-container" class="game-grid">
-    </div>
+    <div id="games-container" class="game-grid"></div>
 
     <button id="fab-add-game" class="fab" title="הוסף משחק חדש">+</button>
 
@@ -309,9 +338,9 @@
             
             <form id="add-game-form">
                 <div class="form-group">
-                    <label for="game-title">שם המשחק:</label>
+                    <label for="game-title">שם המשחק (באנגלית לחיפוש מדויק):</label>
                     <input type="text" id="game-title" placeholder="לדוגמה: Cascadia" required>
-                    <button type="button" id="btn-auto-fill" class="btn-secondary">חפש נתונים אוטומטית</button>
+                    <button type="button" id="btn-auto-fill" class="btn-secondary">חפש נתונים ב-BGG 🌐</button>
                 </div>
 
                 <div class="form-group">
@@ -332,14 +361,14 @@
                             <input type="text" id="game-players" placeholder="לדוגמה: 1-4">
                         </div>
                         <div class="form-group half">
-                            <label for="game-rec-players">מומלץ ביותר:</label>
+                            <label for="game-rec-players">מומלץ (BGG):</label>
                             <input type="text" id="game-rec-players" placeholder="לדוגמה: 2-3">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="game-rating">דירוג:</label>
-                        <input type="text" id="game-rating" placeholder="לדוגמה: 8.0 או 'טרם דורג'">
+                        <label for="game-rating">דירוג (BGG):</label>
+                        <input type="text" id="game-rating" placeholder="לדוגמה: 8.0">
                     </div>
 
                     <div class="form-group">
@@ -352,9 +381,9 @@
             </form>
         </div>
     </div>
+
     <script>
         const games = [
-            // 1. משחקים בבעלותך – המועדפים כרגע (דירוג אישי)
             { name: "Bohnanza", cat: "favs", desc: "מסחר, מיקוח ושתילת פולים. (כולל High Bohn Plus)", players: "2-7", recPlayers: "4-5", rating: "10" },
             { name: "Cubitos", cat: "favs", desc: "מרוץ אקשן המבוסס על ניהול סיכונים וקוביות.", players: "2-4", recPlayers: "3-4", rating: "10" },
             { name: "My Lil' Everdell", cat: "favs", desc: "הצבת עובדים משפחתית וזורמת בעולם היער.", players: "1-4", recPlayers: "2-3", rating: "9" },
@@ -363,64 +392,65 @@
             { name: "Desperate Oasis", cat: "favs", desc: "אסטרטגיה והישרדות.", players: "2", recPlayers: "2", rating: "7.5" },
             { name: "Sushi Go Party!", cat: "favs", desc: "בחירת קלפים (Drafting) ואיסוף סטים קצבי.", players: "2-8", recPlayers: "4-6", rating: "7.5" },
             { name: "Flip 7", cat: "favs", desc: "ניהול סיכונים ומזל מותח בקלפים.", players: "2-10", recPlayers: "4-6", rating: "7.5" },
-
-            // 2. משחקים בבעלותך – פחות בשימוש לאחרונה (דירוג אישי)
             { name: "Azul", cat: "less_used", desc: "הנחת אריחים תחרותית ומופשטת.", players: "2-4", recPlayers: "2", rating: "7" },
-            { name: "Codenames (שם קוד)", cat: "less_used", desc: "משחק מילים, אסוציאציות וחברה.", players: "2-8", recPlayers: "6-8", rating: "7" },
+            { name: "Codenames", cat: "less_used", desc: "משחק מילים, אסוציאציות וחברה.", players: "2-8", recPlayers: "6-8", rating: "7" },
             { name: "Catan", cat: "less_used", desc: "התיישבות, משאבים ומסחר קלאסי.", players: "3-4", recPlayers: "4", rating: "6" },
             { name: "Ticket to Ride", cat: "less_used", desc: "איסוף סטים וחיבור מסילות.", players: "2-5", recPlayers: "4-5", rating: "6" },
             { name: "Splendor", cat: "less_used", desc: "פיתוח מנוע אבני חן מדויק.", players: "2-4", recPlayers: "3", rating: "6" },
             { name: "Monopoly Deal", cat: "less_used", desc: "גרסת הקלפים המהירה של מונופול.", players: "2-5", recPlayers: "3-4", rating: "6" },
             { name: "Hanabi", cat: "less_used", desc: "קלפים שיתופי עם זיכרון ותקשורת מוגבלת.", players: "2-5", recPlayers: "4", rating: "5" },
             { name: "Exploding Kittens", cat: "less_used", desc: "ניהול סיכונים תחרותי ומצחיק.", players: "2-5", recPlayers: "4-5", rating: "3" },
-
-            // 3. שטרם פתחת או שיחקת / בדרך (עודכנו לדירוגי BGG)
-            { name: "Sail", cat: "unplayed", desc: "קלפים שיתופי (Trick-taking) מותח בסערה. (בדרך)", players: "2", recPlayers: "2", rating: "7.6" },
-            { name: "קטאן יורדי הים", cat: "unplayed", desc: "הרחבה לקטאן המוסיפה ספינות, חקר איים חדשים ותרחישים.", players: "3-4", recPlayers: "3-4", rating: "7.4" },
+            { name: "Sail", cat: "unplayed", desc: "קלפים שיתופי מותח בסערה.", players: "2", recPlayers: "2", rating: "7.6" },
+            { name: "קטאן יורדי הים", cat: "unplayed", desc: "הרחבה לקטאן המוסיפה ספינות.", players: "3-4", recPlayers: "3-4", rating: "7.4" },
             { name: "האי הנעלם", cat: "unplayed", desc: "שיתופי, הישרדות ואיסוף אוצרות מאי שוקע.", players: "2-4", recPlayers: "3-4", rating: "7.3" },
             { name: "Coyote", cat: "unplayed", desc: "משחק קלפים, בלופים והערכות.", players: "3-6", recPlayers: "5-6", rating: "6.9" },
-            { name: "5211 (Azul Edition)", cat: "unplayed", desc: "קלפים מהיר, טקטי ומבוסס בלופים. (בדרך)", players: "2-5", recPlayers: "4-5", rating: "6.7" },
-            { name: "Bohnanza: Pirates & Princesses", cat: "unplayed", desc: "וריאציה של המשחק המוכר עם טוויסט.", players: "4-5", recPlayers: "4-5", rating: "6.5" },
-
-            // 4. משחקים אהובים שזמינים אצל חברים (דירוג אישי)
-            { name: "Rebirth", cat: "friends", desc: "אסטרטגיה והנחת אריחים (קניציה).", players: "2-4", recPlayers: "3-4", rating: "10" },
-            { name: "Everdell", cat: "friends", desc: "הצבת עובדים ובניית שילובים בעולם חי ומרהיב.", players: "1-4", recPlayers: "3", rating: "9" },
+            { name: "5211 (Azul Edition)", cat: "unplayed", desc: "קלפים מהיר, טקטי ומבוסס בלופים.", players: "2-5", recPlayers: "4-5", rating: "6.7" },
+            { name: "Rebirth", cat: "friends", desc: "אסטרטגיה והנחת אריחים.", players: "2-4", recPlayers: "3-4", rating: "10" },
+            { name: "Everdell", cat: "friends", desc: "הצבת עובדים ובניית שילובים.", players: "1-4", recPlayers: "3", rating: "9" },
             { name: "Sea Salt & Paper", cat: "friends", desc: "איסוף סטים, ניהול סיכונים וקלפים.", players: "2-4", recPlayers: "2", rating: "9" },
-            { name: "Tiny Towns", cat: "friends", desc: "פאזל משאבים ותכנון מרחבי.", players: "1-6", recPlayers: "3-4", rating: "8" },
-            { name: "Adulthood", cat: "friends", desc: "קלפים העוסק בחוויות חיים.", players: "2-6", recPlayers: "3-4", rating: "8" },
-            { name: "Harmonies", cat: "friends", desc: "בניית תבניות ויצירת נופים אסטרטגית.", players: "1-4", recPlayers: "2-3", rating: "7" },
-            { name: "Scout", cat: "friends", desc: "משחק קלפים מבריק של טיפוס ואיסוף (ללא סידור היד).", players: "2-5", recPlayers: "4-5", rating: "טרם דורג (BGG: 7.8)" },
-            { name: "Hot Streak", cat: "friends", desc: "משחק מסיבה/הימורים כאוטי על מרוצים.", players: "2-9", recPlayers: "4-8", rating: "טרם דורג (BGG: 8.0)" },
-            { name: "Magical Athlete", cat: "friends", desc: "מרוץ פנטזיה קליל ומשעשע.", players: "2-6", recPlayers: "4-5", rating: "טרם דורג (BGG: 6.5)" },
-            { name: "Agent Avenue", cat: "friends", desc: "משחק איסוף סטים, הערכות וניהול סיכונים מהיר לשני שחקנים.", players: "2", recPlayers: "2", rating: "טרם דורג (BGG: 7.0)" },
-
-            // 5. רשימת משאלות (Wishlist)
+            { name: "Scout", cat: "friends", desc: "משחק קלפים מבריק.", players: "2-5", recPlayers: "4-5", rating: "7.8" },
             { name: "The Quacks of Quedlinburg", cat: "wishlist", desc: "משחק ניהול סיכונים קורע מצחוק שבו רוקחים שיקויים.", players: "2-4", recPlayers: "4", rating: "7.8" },
             { name: "Heat: Pedal to the Metal", cat: "wishlist", desc: "מרוץ מכוניות מבריק המבוסס על ניהול קלפים.", players: "1-6", recPlayers: "5-6", rating: "8.1" },
-            { name: "Zoo Vadis", cat: "wishlist", desc: "משא ומתן פוליטי, כולם סוחרים ומשחדים בגן החיות.", players: "3-7", recPlayers: "6-7", rating: "7.9" },
-            { name: "Space Base", cat: "wishlist", desc: "בניית מנוע קוביות, תמיד מעורבים גם בתור של אחרים.", players: "2-5", recPlayers: "4", rating: "7.6" },
-            { name: "Carcassonne", cat: "wishlist", desc: "קלאסיקה של הנחת אריחים. חובה להכיר, מומלץ עם הרחבות.", players: "2-5", recPlayers: "2", rating: "7.4" },
-            { name: "Faraway", cat: "wishlist", desc: "משחק קלפים חכם, קומפקטי ומהיר.", players: "2-6", recPlayers: "3-4", rating: "7.5" },
-            { name: "Living Forest", cat: "wishlist", desc: "שילוב מבריק של ניהול סיכונים, בניית מנוע ואיסוף משאבים.", players: "2-4", recPlayers: "3", rating: "7.4" },
             { name: "Sky Team", cat: "wishlist", desc: "חוויה שיתופית ייחודית ומתוחה לזוג.", players: "2", recPlayers: "2", rating: "8.3" },
-            { name: "Fantastic Factories", cat: "wishlist", desc: "בניית מנוע ייצור מהודקת.", players: "1-5", recPlayers: "3-4", rating: "7.4" },
-            { name: "Castle Combo", cat: "wishlist", desc: "גיוס דמויות ובניית שילובים בטירה. מהיר וטקטי.", players: "2-5", recPlayers: "2-4", rating: "7.3" },
-            { name: "Lost Cities", cat: "wishlist", desc: "משחק קלפים טקטי ומהיר לשניים.", players: "2", recPlayers: "2", rating: "7.2" },
-            { name: "Flamecraft Duals", cat: "wishlist", desc: "גרסה זוגית בעולם של דרקונים חמודים.", players: "2", recPlayers: "2", rating: "7.5" },
-            { name: "Vantage", cat: "wishlist", desc: "הרפתקה פתוחה ורחבת היקף.", players: "1-6", recPlayers: "2-4", rating: "8.0" },
-            { name: "Port Royal", cat: "wishlist", desc: "משחק קלפים מהיר, ניהול סיכונים בעולם שודדי ים.", players: "2-5", recPlayers: "4-5", rating: "7.2" },
-            { name: "Celestia", cat: "wishlist", desc: "משחק חברה קליל של ניהול סיכונים קבוצתי.", players: "2-6", recPlayers: "4-6", rating: "6.8" },
-            { name: "Botswana", cat: "wishlist", desc: "משחק קלפים קליל וטקטי של מניפולציית שוק (קניציה).", players: "2-5", recPlayers: "3-4", rating: "6.8" },
-            { name: "Skulls of Sedlec", cat: "wishlist", desc: "משחק קלפים מינימליסטי של הרכבת פירמידות.", players: "2-3", recPlayers: "2", rating: "7.1" },
-            { name: "Meadow", cat: "wishlist", desc: "משחק חקירת טבע ואיסוף סטים רגוע ויפהפה.", players: "1-4", recPlayers: "3", rating: "7.9" },
-            { name: "Tag Team", cat: "wishlist", desc: "תחרותי וממוקד שיתוף פעולה בזוגות.", players: "2", recPlayers: "2", rating: "7.7" },
-            { name: "Fliptoons", cat: "wishlist", desc: "משחק קלפים קליל ודינמי.", players: "1-4", recPlayers: "3-4", rating: "7.2" },
-            { name: "Coloretto", cat: "wishlist", desc: "משחק איסוף סטים קליל.", players: "2-5", recPlayers: "3-4", rating: "7.0" },
-            { name: "Toy Battle", cat: "wishlist", desc: "קרבות דו-קרב מהירים.", players: "2", recPlayers: "2", rating: "7.0" },
-            { name: "Eternal Decks", cat: "wishlist", desc: "מבוסס בניית חפיסות (שיתוף פעולה).", players: "1-4", recPlayers: "2-4", rating: "6.5" }
+            { name: "Vantage", cat: "wishlist", desc: "הרפתקה פתוחה ורחבת היקף.", players: "1-6", recPlayers: "2-4", rating: "8.0" }
         ];
 
         let currentCategory = 'favs';
+        let isEditMode = false;
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const editBtn = document.getElementById('edit-btn');
+            if(isEditMode) {
+                editBtn.classList.add('active-edit');
+            } else {
+                editBtn.classList.remove('active-edit');
+            }
+            const activeBtn = document.querySelector('.tab-btn.active');
+            renderGames(currentCategory, activeBtn);
+        }
+
+        function moveGame(event, gameName, newCat) {
+            event.stopPropagation();
+            const gameIndex = games.findIndex(g => g.name === gameName);
+            if(gameIndex > -1) {
+                games[gameIndex].cat = newCat;
+                const activeBtn = document.querySelector('.tab-btn.active');
+                renderGames(currentCategory, activeBtn);
+            }
+        }
+
+        function deleteGame(event, gameName) {
+            event.stopPropagation();
+            if(confirm('האם אתה בטוח שברצונך למחוק את ' + gameName + '?')) {
+                const gameIndex = games.findIndex(g => g.name === gameName);
+                if(gameIndex > -1) {
+                    games.splice(gameIndex, 1);
+                    const activeBtn = document.querySelector('.tab-btn.active');
+                    renderGames(currentCategory, activeBtn);
+                }
+            }
+        }
 
         function renderGames(category, btnElement) {
             currentCategory = category;
@@ -450,8 +480,7 @@
                 });
             }
 
-            // במקרה שנוספו משחקים חדשים לקטגוריה שלא התחלנו לשחק, רצוי שהמשחק החדש יופיע גם הוא
-            filtered.forEach((game, index) => {
+            filtered.forEach((game) => {
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 card.onclick = function() { toggleDetails(this); };
@@ -467,6 +496,23 @@
                 
                 let recPlayersDisplay = game.recPlayers ? `<span class="rec-players">(מומלץ: ${game.recPlayers})</span>` : '';
 
+                // אפשרויות עריכה (יוצגו רק אם במצב עריכה)
+                let editHtml = '';
+                if(isEditMode) {
+                    editHtml = `
+                    <div class="edit-actions">
+                        <select onchange="moveGame(event, '${game.name.replace(/'/g, "\\'")}', this.value)" onclick="event.stopPropagation()">
+                            <option value="favs" ${game.cat === 'favs' ? 'selected' : ''}>מועדפים</option>
+                            <option value="less_used" ${game.cat === 'less_used' ? 'selected' : ''}>פחות בשימוש</option>
+                            <option value="unplayed" ${game.cat === 'unplayed' ? 'selected' : ''}>טרם שיחקתי / בדרך</option>
+                            <option value="friends" ${game.cat === 'friends' ? 'selected' : ''}>אצל חברים</option>
+                            <option value="wishlist" ${game.cat === 'wishlist' ? 'selected' : ''}>ווישליסט</option>
+                        </select>
+                        <button class="delete-btn" onclick="deleteGame(event, '${game.name.replace(/'/g, "\\'")}')">🗑️ מחיקה</button>
+                    </div>
+                    `;
+                }
+
                 card.innerHTML = `
                     <div class="game-header">
                         <div class="game-title">${game.name}</div>
@@ -476,6 +522,7 @@
                         <div class="detail-row"><span class="detail-label">סגנון:</span> ${game.desc}</div>
                         <div class="detail-row"><span class="detail-label">שחקנים:</span> 👥 ${game.players} ${recPlayersDisplay}</div>
                         <div class="detail-row"><span class="detail-label">דירוג:</span> ${ratingDisplay}</div>
+                        ${editHtml}
                     </div>
                 `;
                 container.appendChild(card);
@@ -501,7 +548,72 @@
             }
         }
 
-        // ---------------- JavaScript חדש: אירועי המודאל ---------------- //
+        // --- חיבור ל-BoardGameGeek API ---
+        async function fetchRealBGGData(title) {
+            try {
+                // 1. חיפוש המשחק
+                const searchResponse = await fetch(`https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(title)}&type=boardgame`);
+                const searchText = await searchResponse.text();
+                const parser = new DOMParser();
+                const searchXml = parser.parseFromString(searchText, "text/xml");
+                
+                const item = searchXml.querySelector('item');
+                if (!item) return null; 
+                
+                const id = item.getAttribute('id');
+                const exactName = item.querySelector('name').getAttribute('value');
+                
+                // 2. שליפת פרטים מלאים לפי ה-ID
+                const thingResponse = await fetch(`https://boardgamegeek.com/xmlapi2/thing?id=${id}&stats=1`);
+                const thingText = await thingResponse.text();
+                const thingXml = parser.parseFromString(thingText, "text/xml");
+                
+                const minPlayers = thingXml.querySelector('minplayers')?.getAttribute('value') || '?';
+                const maxPlayers = thingXml.querySelector('maxplayers')?.getAttribute('value') || '?';
+                const players = minPlayers === maxPlayers ? minPlayers : `${minPlayers}-${maxPlayers}`;
+                
+                const rating = thingXml.querySelector('statistics ratings average')?.getAttribute('value') || '?';
+                const parsedRating = parseFloat(rating).toFixed(1);
+
+                // חישוב מומלץ ביותר מהסקרים
+                let recPlayers = '?';
+                const numPlayersPoll = thingXml.querySelector('poll[name="suggested_numplayers"]');
+                if (numPlayersPoll) {
+                    let bestNum = '?';
+                    let maxBestVotes = -1;
+                    const results = numPlayersPoll.querySelectorAll('results');
+                    results.forEach(res => {
+                        const numplayers = res.getAttribute('numplayers');
+                        const bestVotes = parseInt(res.querySelector('result[value="Best"]')?.getAttribute('numvotes') || '0');
+                        if (bestVotes > maxBestVotes) {
+                            maxBestVotes = bestVotes;
+                            bestNum = numplayers;
+                        }
+                    });
+                    if (maxBestVotes > 0) recPlayers = bestNum;
+                }
+
+                // תיאור
+                let descriptionRaw = thingXml.querySelector('description')?.textContent || '';
+                const txt = document.createElement("textarea");
+                txt.innerHTML = descriptionRaw;
+                let description = txt.value.replace(/<[^>]*>?/gm, '').trim();
+                if(description.length > 100) description = description.substring(0, 100) + '...';
+
+                return {
+                    name: exactName,
+                    players: players,
+                    recPlayers: recPlayers,
+                    rating: isNaN(parsedRating) ? '?' : parsedRating,
+                    description: description
+                };
+            } catch (error) {
+                console.error("BGG Fetch Error: ", error);
+                return null;
+            }
+        }
+
+        // אירועי המודאל
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('game-modal');
             const openModalBtn = document.getElementById('fab-add-game');
@@ -509,57 +621,44 @@
             const autoFillBtn = document.getElementById('btn-auto-fill');
             const addGameForm = document.getElementById('add-game-form');
 
-            // פתיחת המודאל
-            openModalBtn.addEventListener('click', () => {
-                modal.style.display = 'flex';
-            });
-
-            // סגירת המודאל
-            closeModalBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-                addGameForm.reset();
-            });
-
-            // סגירה בלחיצה מחוץ לחלונית
+            openModalBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
+            closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; addGameForm.reset(); });
             window.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                    addGameForm.reset();
-                }
+                if (e.target === modal) { modal.style.display = 'none'; addGameForm.reset(); }
             });
 
-            // קריאת דמה לנתונים
+            // הפעלת החיפוש ב-BGG
             autoFillBtn.addEventListener('click', async () => {
                 const title = document.getElementById('game-title').value.trim();
                 if (!title) {
-                    alert('אנא הכנס שם משחק לחיפוש');
+                    alert('אנא הכנס שם משחק (עדיף באנגלית) לחיפוש');
                     return;
                 }
 
-                autoFillBtn.innerText = 'מחפש נתונים...';
+                autoFillBtn.innerText = 'מחפש ב-BGG... ⏳';
                 autoFillBtn.disabled = true;
 
                 try {
-                    const mockData = await fetchMockGameData(title);
-                    if (mockData) {
-                        document.getElementById('game-players').value = mockData.players;
-                        document.getElementById('game-rec-players').value = mockData.recPlayers;
-                        document.getElementById('game-rating').value = mockData.rating;
-                        document.getElementById('game-description').value = mockData.description;
+                    const realData = await fetchRealBGGData(title);
+                    if (realData) {
+                        document.getElementById('game-title').value = realData.name;
+                        document.getElementById('game-players').value = realData.players;
+                        document.getElementById('game-rec-players').value = realData.recPlayers;
+                        document.getElementById('game-rating').value = realData.rating;
+                        document.getElementById('game-description').value = realData.description;
+                    } else {
+                        alert('לא נמצא משחק תואם במאגר של BoardGameGeek. בדוק איות או הקלד ידנית.');
                     }
                 } catch (error) {
-                    console.error('שגיאה:', error);
+                    alert('שגיאת רשת במשיכת הנתונים.');
                 } finally {
-                    autoFillBtn.innerText = 'חפש נתונים אוטומטית';
+                    autoFillBtn.innerText = 'חפש נתונים ב-BGG 🌐';
                     autoFillBtn.disabled = false;
                 }
             });
 
-            // שילוב לוגיקת ההוספה המחוברת למערך שלך
             addGameForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-
-                // יצירת אובייקט בדיוק בפורמט של מערך ה-games שלך
                 const newGameObj = {
                     name: document.getElementById('game-title').value,
                     cat: document.getElementById('game-category').value,
@@ -568,54 +667,14 @@
                     recPlayers: document.getElementById('game-rec-players').value || '',
                     rating: document.getElementById('game-rating').value || '?'
                 };
-
-                // דחיפת המשחק החדש למערך
-                games.unshift(newGameObj); // unshift מכניס לתחילת הרשימה
-
-                // עדכון התצוגה - מרענן את הקטגוריה הנוכחית
+                games.unshift(newGameObj); 
                 const activeBtn = document.querySelector('.tab-btn.active');
                 renderGames(currentCategory, activeBtn);
-
-                // סגירה ואיפוס
                 modal.style.display = 'none';
                 addGameForm.reset();
-                
-                alert('המשחק נוסף בהצלחה!');
             });
         });
 
-        // פונקציית הבדיקה (Simulated API)
-        function fetchMockGameData(title) {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    const lowerTitle = title.toLowerCase();
-                    if (lowerTitle.includes('cascadia') || lowerTitle.includes('קסקדיה')) {
-                        resolve({
-                            players: '1-4',
-                            recPlayers: '2-3',
-                            rating: '8.0',
-                            description: 'פאזל מרהיב של הנחת אריחים ובניית בתי גידול.'
-                        });
-                    } else if (lowerTitle.includes('azul') || lowerTitle.includes('אזול')) {
-                        resolve({
-                            players: '2-4',
-                            recPlayers: '2',
-                            rating: '7.8',
-                            description: 'משחק אסטרטגי מופשט על עיטור קירות הארמון.'
-                        });
-                    } else {
-                        resolve({
-                            players: '2-4',
-                            recPlayers: '3',
-                            rating: '7.5',
-                            description: `נתונים אוטומטיים עבור ${title}.`
-                        });
-                    }
-                }, 1000);
-            });
-        }
-
-        // אתחול העמוד
         window.onload = () => {
             const firstBtn = document.querySelector('.tab-btn');
             renderGames('favs', firstBtn);
