@@ -584,10 +584,16 @@
             }
         }
 
-        async function fetchRealBGGData(title) {
+                async function fetchRealBGGData(title) {
             try {
-                const searchResponse = await fetch(`https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(title)}&type=boardgame`);
+                // שימוש בשירות פרוקסי (מתווך) כדי לעקוף את חסימת ה-CORS של הדפדפן
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                
+                // 1. חיפוש המשחק
+                const searchUrl = `https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(title)}&type=boardgame`;
+                const searchResponse = await fetch(proxyUrl + encodeURIComponent(searchUrl));
                 const searchText = await searchResponse.text();
+                
                 const parser = new DOMParser();
                 const searchXml = parser.parseFromString(searchText, "text/xml");
                 
@@ -597,7 +603,9 @@
                 const id = items[0].getAttribute('id');
                 const exactName = items[0].querySelector('name').getAttribute('value');
                 
-                const thingResponse = await fetch(`https://boardgamegeek.com/xmlapi2/thing?id=${id}&stats=1`);
+                // 2. שליפת פרטים מלאים
+                const thingUrl = `https://boardgamegeek.com/xmlapi2/thing?id=${id}&stats=1`;
+                const thingResponse = await fetch(proxyUrl + encodeURIComponent(thingUrl));
                 const thingText = await thingResponse.text();
                 const thingXml = parser.parseFromString(thingText, "text/xml");
                 
