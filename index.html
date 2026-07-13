@@ -78,7 +78,7 @@
             color: white;
         }
 
-        .random-btn {
+        .filter-btn {
             width: 100%;
             padding: 15px;
             background: #4CAF50;
@@ -90,9 +90,8 @@
             cursor: pointer;
             margin-bottom: 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: none;
         }
-        .random-btn:active {
+        .filter-btn:active {
             background: #388E3C;
         }
         
@@ -320,7 +319,8 @@
         <button class="tab-btn" onclick="renderGames('wishlist', this)">ווישליסט</button>
     </div>
 
-    <button id="random-btn" class="random-btn" onclick="pickRandomGame()">🎲 בחר לי משחק אקראי מהמועדפים!</button>
+    <!-- כפתור הסינון החדש -->
+    <button id="filter-players-btn" class="filter-btn" onclick="filterByPlayers()">👥 בחר משחק לפי כמות שחקנים</button>
 
     <div id="games-container" class="game-grid"></div>
 
@@ -360,7 +360,6 @@
                         </div>
                     </div>
 
-                    <!-- שורה חדשה בטופס לדירוג וזמן משחק -->
                     <div class="form-row">
                         <div class="form-group half">
                             <label for="game-rating">דירוג (BGG):</label>
@@ -384,7 +383,6 @@
     </div>
 
     <script>
-        // המאגר המלא עם זמני המשחק מעודכנים מ-BGG
         const defaultGames = [
             { name: "Bohnanza", cat: "favs", desc: "מסחר, מיקוח ושתילת פולים. (כולל High Bohn Plus)", players: "2-7", recPlayers: "4-5", rating: "10", playtime: "45" },
             { name: "Cubitos", cat: "favs", desc: "מרוץ אקשן המבוסס על ניהול סיכונים וקוביות.", players: "2-4", recPlayers: "3-4", rating: "10", playtime: "45-60" },
@@ -441,8 +439,6 @@
             { name: "Coloretto", cat: "wishlist", desc: "משחק איסוף סטים קליל.", players: "2-5", recPlayers: "3-4", rating: "7.0", playtime: "30" },
             { name: "Toy Battle", cat: "wishlist", desc: "קרבות דו-קרב מהירים.", players: "2", recPlayers: "2", rating: "7.0", playtime: "15" },
             { name: "Eternal Decks", cat: "wishlist", desc: "מבוסס בניית חפיסות (שיתוף פעולה).", players: "1-4", recPlayers: "2-4", rating: "6.5", playtime: "30-60" },
-            
-            // 4 המשחקים החדשים שהוספת (עם הנתונים המלאים שלהם כדי שגם אם תתקין מחדש הם ישמרו)
             { name: "Hive", cat: "wishlist", desc: "משחק אסטרטגיה מופשט מבריק ללא לוח, שבו מזיזים אריחי חרקים.", players: "2", recPlayers: "2", rating: "7.3", playtime: "20" },
             { name: "Rivals of Catan", cat: "wishlist", desc: "הגרסה הזוגית המעולה של קטאן המבוססת על קלפים.", players: "2", recPlayers: "2", rating: "7.2", playtime: "45-60" },
             { name: "Fire Tower", cat: "wishlist", desc: "משחק מהיר בו מכוונים שריפת יער לעבר המגדלים של היריבים.", players: "2-4", recPlayers: "4", rating: "7.3", playtime: "15-30" },
@@ -451,27 +447,12 @@
 
         let games = [];
         
-        // מנגנון הגירה חכם v2: טוען נתונים קיימים ומוסיף להם את זמני המשחק!
         const savedDataV2 = localStorage.getItem('myBoardGamesApp_v2');
         if (savedDataV2) {
             games = JSON.parse(savedDataV2);
         } else {
-            const savedDataV1 = localStorage.getItem('myBoardGamesApp_v1');
-            if (savedDataV1) {
-                // לוקח את השמירה הישנה שלך וממזג אותה עם זמני המשחק החדשים
-                let oldGames = JSON.parse(savedDataV1);
-                games = oldGames.map(oldGame => {
-                    const defaultGame = defaultGames.find(dg => dg.name === oldGame.name);
-                    return {
-                        ...oldGame,
-                        playtime: oldGame.playtime || (defaultGame ? defaultGame.playtime : '?')
-                    };
-                });
-                localStorage.setItem('myBoardGamesApp_v2', JSON.stringify(games));
-            } else {
-                games = [...defaultGames];
-                localStorage.setItem('myBoardGamesApp_v2', JSON.stringify(games));
-            }
+            games = [...defaultGames];
+            localStorage.setItem('myBoardGamesApp_v2', JSON.stringify(games));
         }
 
         function saveToLocal() {
@@ -490,7 +471,7 @@
                 editBtn.classList.remove('active-edit');
             }
             const activeBtn = document.querySelector('.tab-btn.active');
-            renderGames(currentCategory, activeBtn);
+            if (activeBtn) renderGames(currentCategory, activeBtn);
         }
 
         function moveGame(event, gameName, newCat) {
@@ -499,8 +480,13 @@
             if(gameIndex > -1) {
                 games[gameIndex].cat = newCat;
                 saveToLocal(); 
-                const activeBtn = document.querySelector('.tab-btn.active');
-                renderGames(currentCategory, activeBtn);
+                
+                if(currentCategory === 'filter') {
+                    // אם אנחנו במצב סינון, נשאיר את הכרטיסייה במקום ורק נעדכן שמירה
+                } else {
+                    const activeBtn = document.querySelector('.tab-btn.active');
+                    renderGames(currentCategory, activeBtn);
+                }
             }
         }
 
@@ -511,10 +497,68 @@
                 if(gameIndex > -1) {
                     games.splice(gameIndex, 1);
                     saveToLocal(); 
-                    const activeBtn = document.querySelector('.tab-btn.active');
-                    renderGames(currentCategory, activeBtn);
+                    
+                    if(currentCategory === 'filter') {
+                        event.target.closest('.game-card').remove();
+                    } else {
+                        const activeBtn = document.querySelector('.tab-btn.active');
+                        renderGames(currentCategory, activeBtn);
+                    }
                 }
             }
+        }
+
+        // פונקציית עזר ליצירת כרטיסיית משחק (מונעת שכפול קוד)
+        function createCardElement(game, category) {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.onclick = function() { toggleDetails(this); };
+            
+            let ratingDisplay = `<span class="rating-badge">⭐ ${game.rating}</span>`;
+            if(game.rating.includes("טרם דורג") || game.rating === "?") {
+                ratingDisplay = `<span class="rating-badge">${game.rating}</span>`;
+            }
+            
+            if(category === 'wishlist' || category === 'unplayed' || category === 'filter') {
+                ratingDisplay = `<span class="rating-badge">⭐ BGG: ${game.rating}</span>`;
+            }
+            
+            let recPlayersDisplay = game.recPlayers && game.recPlayers !== '?' ? `<span class="rec-players">(מומלץ: ${game.recPlayers})</span>` : '';
+            let playtimeDisplay = game.playtime && game.playtime !== '?' ? `<span class="playtime-badge">⏳ ${game.playtime} דק'</span>` : '';
+
+            let editHtml = '';
+            if(isEditMode) {
+                editHtml = `
+                <div class="edit-actions">
+                    <select onchange="moveGame(event, '${game.name.replace(/'/g, "\\'")}', this.value)" onclick="event.stopPropagation()">
+                        <option value="favs" ${game.cat === 'favs' ? 'selected' : ''}>מועדפים</option>
+                        <option value="less_used" ${game.cat === 'less_used' ? 'selected' : ''}>פחות בשימוש</option>
+                        <option value="unplayed" ${game.cat === 'unplayed' ? 'selected' : ''}>טרם שיחקתי / בדרך</option>
+                        <option value="friends" ${game.cat === 'friends' ? 'selected' : ''}>אצל חברים</option>
+                        <option value="wishlist" ${game.cat === 'wishlist' ? 'selected' : ''}>ווישליסט</option>
+                    </select>
+                    <button class="delete-btn" onclick="deleteGame(event, '${game.name.replace(/'/g, "\\'")}')">🗑️ מחיקה</button>
+                </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="game-header">
+                    <div class="game-title">${game.name}</div>
+                    <div class="tag">⬇️ פרטים</div>
+                </div>
+                <div class="game-details">
+                    <div class="detail-row"><span class="detail-label">סגנון:</span> ${game.desc}</div>
+                    <div class="detail-row">
+                        <span class="detail-label">שחקנים:</span> 👥 ${game.players} ${recPlayersDisplay}
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">נתונים:</span> ${playtimeDisplay} ${ratingDisplay}
+                    </div>
+                    ${editHtml}
+                </div>
+            `;
+            return card;
         }
 
         function renderGames(category, btnElement) {
@@ -523,13 +567,6 @@
             if(btnElement) {
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                 btnElement.classList.add('active');
-            }
-
-            const randomBtn = document.getElementById('random-btn');
-            if(category === 'favs') {
-                randomBtn.style.display = 'block';
-            } else {
-                randomBtn.style.display = 'none';
             }
 
             const container = document.getElementById('games-container');
@@ -546,57 +583,77 @@
             }
 
             filtered.forEach((game) => {
-                const card = document.createElement('div');
-                card.className = 'game-card';
-                card.onclick = function() { toggleDetails(this); };
-                
-                let ratingDisplay = `<span class="rating-badge">⭐ ${game.rating}</span>`;
-                if(game.rating.includes("טרם דורג") || game.rating === "?") {
-                    ratingDisplay = `<span class="rating-badge">${game.rating}</span>`;
-                }
-                
-                if(category === 'wishlist' || category === 'unplayed') {
-                    ratingDisplay = `<span class="rating-badge">⭐ BGG: ${game.rating}</span>`;
-                }
-                
-                let recPlayersDisplay = game.recPlayers ? `<span class="rec-players">(מומלץ: ${game.recPlayers})</span>` : '';
-                let playtimeDisplay = game.playtime && game.playtime !== '?' ? `<span class="playtime-badge">⏳ ${game.playtime} דק'</span>` : '';
-
-                let editHtml = '';
-                if(isEditMode) {
-                    editHtml = `
-                    <div class="edit-actions">
-                        <select onchange="moveGame(event, '${game.name.replace(/'/g, "\\'")}', this.value)" onclick="event.stopPropagation()">
-                            <option value="favs" ${game.cat === 'favs' ? 'selected' : ''}>מועדפים</option>
-                            <option value="less_used" ${game.cat === 'less_used' ? 'selected' : ''}>פחות בשימוש</option>
-                            <option value="unplayed" ${game.cat === 'unplayed' ? 'selected' : ''}>טרם שיחקתי / בדרך</option>
-                            <option value="friends" ${game.cat === 'friends' ? 'selected' : ''}>אצל חברים</option>
-                            <option value="wishlist" ${game.cat === 'wishlist' ? 'selected' : ''}>ווישליסט</option>
-                        </select>
-                        <button class="delete-btn" onclick="deleteGame(event, '${game.name.replace(/'/g, "\\'")}')">🗑️ מחיקה</button>
-                    </div>
-                    `;
-                }
-
-                card.innerHTML = `
-                    <div class="game-header">
-                        <div class="game-title">${game.name}</div>
-                        <div class="tag">⬇️ פרטים</div>
-                    </div>
-                    <div class="game-details">
-                        <div class="detail-row"><span class="detail-label">סגנון:</span> ${game.desc}</div>
-                        <div class="detail-row">
-                            <span class="detail-label">שחקנים:</span> 👥 ${game.players} ${recPlayersDisplay}
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">נתונים:</span> ${playtimeDisplay} ${ratingDisplay}
-                        </div>
-                        ${editHtml}
-                    </div>
-                `;
-                container.appendChild(card);
+                container.appendChild(createCardElement(game, category));
             });
         }
+
+        // --- הפונקציה החדשה לסינון לפי מספר שחקנים ---
+        function isPlayerCountValid(playersStr, num) {
+            if (!playersStr || playersStr === '?') return false;
+            let min = 0, max = 0;
+            // ניקוי של מחרוזת מכל תו שאינו מספר או מקף
+            const cleanStr = playersStr.replace(/[^\d-]/g, '');
+            if (!cleanStr) return false;
+            
+            if (cleanStr.includes('-')) {
+                const parts = cleanStr.split('-');
+                min = parseInt(parts[0]);
+                max = parseInt(parts[1]);
+            } else {
+                min = parseInt(cleanStr);
+                max = min;
+            }
+            return num >= min && num <= max;
+        }
+
+        function filterByPlayers() {
+            const input = prompt("כמה שחקנים אתם הערב?");
+            if (!input) return; // המשתמש לחץ ביטול
+            const num = parseInt(input);
+            
+            if (isNaN(num) || num <= 0) {
+                alert("אנא הזן מספר חוקי.");
+                return;
+            }
+
+            currentCategory = 'filter';
+            
+            // מנקה את מצב הפעילות מכל הטאבים כדי לסמן שאנחנו במצב סינון
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            const container = document.getElementById('games-container');
+            container.innerHTML = '';
+
+            let validGames = games.filter(g => {
+                // רק משחקים באוסף (מועדפים ופחות בשימוש)
+                if (g.cat !== 'favs' && g.cat !== 'less_used') return false;
+                return isPlayerCountValid(g.players, num);
+            });
+
+            if (validGames.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 20px; font-size: 16px;">לא מצאתי משחקים מתאימים ל-${num} שחקנים באוסף שלך. 🤷‍♂️</div>`;
+                return;
+            }
+
+            // מיון המשחקים שנמצאו לפי דירוג BGG (מהגבוה לנמוך)
+            validGames.sort((a, b) => {
+                const ratingA = parseFloat(a.rating) || 0;
+                const ratingB = parseFloat(b.rating) || 0;
+                return ratingB - ratingA;
+            });
+
+            const title = document.createElement('h3');
+            title.style.textAlign = 'center';
+            title.style.color = '#6200ea';
+            title.style.marginTop = '0';
+            title.innerText = `משחקים מתאימים ל-${num} שחקנים:`;
+            container.appendChild(title);
+
+            validGames.forEach((game) => {
+                container.appendChild(createCardElement(game, 'filter'));
+            });
+        }
+        // ------------------------------------------------
 
         function toggleDetails(element) {
             const details = element.querySelector('.game-details');
@@ -605,15 +662,6 @@
             } else {
                 document.querySelectorAll('.game-details').forEach(el => el.classList.remove('open'));
                 details.classList.add('open');
-            }
-        }
-
-        function pickRandomGame() {
-            const favGames = games.filter(g => g.cat === 'favs');
-            if(favGames.length > 0) {
-                const randomIndex = Math.floor(Math.random() * favGames.length);
-                const chosen = favGames[randomIndex];
-                alert('🎲 המשחק שנבחר עבורך הוא:\n\n' + chosen.name + '\n\nתהנה!');
             }
         }
 
@@ -642,8 +690,11 @@
                 };
                 games.unshift(newGameObj); 
                 saveToLocal(); 
-                const activeBtn = document.querySelector('.tab-btn.active');
-                renderGames(currentCategory, activeBtn);
+                
+                if (currentCategory !== 'filter') {
+                    const activeBtn = document.querySelector('.tab-btn.active');
+                    if (activeBtn) renderGames(currentCategory, activeBtn);
+                }
                 modal.style.display = 'none';
                 addGameForm.reset();
             });
