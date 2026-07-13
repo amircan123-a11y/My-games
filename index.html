@@ -291,16 +291,6 @@
             width: 100%;
             margin-top: 10px;
         }
-        .btn-secondary {
-            background-color: #e5e7eb;
-            color: #374151;
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 5px;
-        }
     </style>
 </head>
 <body>
@@ -331,9 +321,8 @@
             
             <form id="add-game-form">
                 <div class="form-group">
-                    <label for="game-title">שם המשחק (באנגלית לחיפוש מדויק):</label>
+                    <label for="game-title">שם המשחק:</label>
                     <input type="text" id="game-title" placeholder="לדוגמה: Cascadia" required>
-                    <button type="button" id="btn-auto-fill" class="btn-secondary">חפש נתונים ב-BGG 🌐</button>
                 </div>
 
                 <div class="form-group">
@@ -376,7 +365,6 @@
     </div>
 
     <script>
-        // רשימת ברירת המחדל המקורית שלך
         const defaultGames = [
             { name: "Bohnanza", cat: "favs", desc: "מסחר, מיקוח ושתילת פולים. (כולל High Bohn Plus)", players: "2-7", recPlayers: "4-5", rating: "10" },
             { name: "Cubitos", cat: "favs", desc: "מרוץ אקשן המבוסס על ניהול סיכונים וקוביות.", players: "2-4", recPlayers: "3-4", rating: "10" },
@@ -437,7 +425,6 @@
 
         let games = [];
         
-        // טעינת המשחקים מהזיכרון של המכשיר או שימוש בברירת המחדל
         const savedData = localStorage.getItem('myBoardGamesApp_v1');
         if (savedData) {
             games = JSON.parse(savedData);
@@ -445,7 +432,6 @@
             games = [...defaultGames];
         }
 
-        // פונקציה לשמירת שינויים אוטומטית
         function saveToLocal() {
             localStorage.setItem('myBoardGamesApp_v1', JSON.stringify(games));
         }
@@ -470,7 +456,7 @@
             const gameIndex = games.findIndex(g => g.name === gameName);
             if(gameIndex > -1) {
                 games[gameIndex].cat = newCat;
-                saveToLocal(); // שמירה אוטומטית
+                saveToLocal(); 
                 const activeBtn = document.querySelector('.tab-btn.active');
                 renderGames(currentCategory, activeBtn);
             }
@@ -482,7 +468,7 @@
                 const gameIndex = games.findIndex(g => g.name === gameName);
                 if(gameIndex > -1) {
                     games.splice(gameIndex, 1);
-                    saveToLocal(); // שמירה אוטומטית
+                    saveToLocal(); 
                     const activeBtn = document.querySelector('.tab-btn.active');
                     renderGames(currentCategory, activeBtn);
                 }
@@ -584,114 +570,16 @@
             }
         }
 
-                async function fetchRealBGGData(title) {
-            try {
-                // שימוש בשירות פרוקסי (מתווך) כדי לעקוף את חסימת ה-CORS של הדפדפן
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
-                
-                // 1. חיפוש המשחק
-                const searchUrl = `https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(title)}&type=boardgame`;
-                const searchResponse = await fetch(proxyUrl + encodeURIComponent(searchUrl));
-                const searchText = await searchResponse.text();
-                
-                const parser = new DOMParser();
-                const searchXml = parser.parseFromString(searchText, "text/xml");
-                
-                const items = searchXml.querySelectorAll('item');
-                if (items.length === 0) return null; 
-                
-                const id = items[0].getAttribute('id');
-                const exactName = items[0].querySelector('name').getAttribute('value');
-                
-                // 2. שליפת פרטים מלאים
-                const thingUrl = `https://boardgamegeek.com/xmlapi2/thing?id=${id}&stats=1`;
-                const thingResponse = await fetch(proxyUrl + encodeURIComponent(thingUrl));
-                const thingText = await thingResponse.text();
-                const thingXml = parser.parseFromString(thingText, "text/xml");
-                
-                const minPlayers = thingXml.querySelector('minplayers')?.getAttribute('value') || '?';
-                const maxPlayers = thingXml.querySelector('maxplayers')?.getAttribute('value') || '?';
-                const players = minPlayers === maxPlayers ? minPlayers : `${minPlayers}-${maxPlayers}`;
-                
-                const ratingElement = thingXml.querySelector('statistics ratings average');
-                const rating = ratingElement ? parseFloat(ratingElement.getAttribute('value')).toFixed(1) : '?';
-
-                let recPlayers = '?';
-                const numPlayersPoll = thingXml.querySelector('poll[name="suggested_numplayers"]');
-                if (numPlayersPoll) {
-                    let bestNum = '?';
-                    let maxBestVotes = -1;
-                    const results = numPlayersPoll.querySelectorAll('results');
-                    results.forEach(res => {
-                        const numplayers = res.getAttribute('numplayers');
-                        const bestVotes = parseInt(res.querySelector('result[value="Best"]')?.getAttribute('numvotes') || '0');
-                        if (bestVotes > maxBestVotes && bestVotes > 0) {
-                            maxBestVotes = bestVotes;
-                            bestNum = numplayers;
-                        }
-                    });
-                    if (maxBestVotes > 0) recPlayers = bestNum;
-                }
-
-                let descriptionRaw = thingXml.querySelector('description')?.textContent || '';
-                const txt = document.createElement("textarea");
-                txt.innerHTML = descriptionRaw;
-                let description = txt.value.replace(/<[^>]*>?/gm, '').trim();
-                if(description.length > 120) description = description.substring(0, 120) + '...';
-
-                return {
-                    name: exactName,
-                    players: players,
-                    recPlayers: recPlayers,
-                    rating: rating,
-                    description: description
-                };
-            } catch (error) {
-                console.error("BGG Fetch Error: ", error);
-                return null;
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('game-modal');
             const openModalBtn = document.getElementById('fab-add-game');
             const closeModalBtn = document.getElementById('close-modal');
-            const autoFillBtn = document.getElementById('btn-auto-fill');
             const addGameForm = document.getElementById('add-game-form');
 
             openModalBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
             closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; addGameForm.reset(); });
             window.addEventListener('click', (e) => {
                 if (e.target === modal) { modal.style.display = 'none'; addGameForm.reset(); }
-            });
-
-            autoFillBtn.addEventListener('click', async () => {
-                const title = document.getElementById('game-title').value.trim();
-                if (!title) {
-                    alert('אנא הכנס שם משחק (עדיף באנגלית) לחיפוש');
-                    return;
-                }
-
-                autoFillBtn.innerText = 'מחפש ב-BGG... ⏳';
-                autoFillBtn.disabled = true;
-
-                try {
-                    const realData = await fetchRealBGGData(title);
-                    if (realData) {
-                        document.getElementById('game-title').value = realData.name;
-                        document.getElementById('game-players').value = realData.players;
-                        document.getElementById('game-rec-players').value = realData.recPlayers;
-                        document.getElementById('game-rating').value = realData.rating;
-                        document.getElementById('game-description').value = realData.description;
-                    } else {
-                        alert('לא נמצא משחק תואם במאגר של BoardGameGeek. בדוק איות או הקלד ידנית.');
-                    }
-                } catch (error) {
-                    alert('שגיאת רשת במשיכת הנתונים.');
-                } finally {
-                    autoFillBtn.innerText = 'חפש נתונים ב-BGG 🌐';
-                    autoFillBtn.disabled = false;
-                }
             });
 
             addGameForm.addEventListener('submit', (e) => {
@@ -705,7 +593,7 @@
                     rating: document.getElementById('game-rating').value || '?'
                 };
                 games.unshift(newGameObj); 
-                saveToLocal(); // שמירה אוטומטית של המשחק החדש
+                saveToLocal(); 
                 const activeBtn = document.querySelector('.tab-btn.active');
                 renderGames(currentCategory, activeBtn);
                 modal.style.display = 'none';
