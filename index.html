@@ -146,6 +146,7 @@
             margin-bottom: 6px;
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
             gap: 5px;
         }
         .detail-label {
@@ -156,6 +157,14 @@
             display: inline-block;
             background: #fff3e0;
             color: #e65100;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+        .personal-rating-badge {
+            display: inline-block;
+            background: #f3e5f5;
+            color: #6a1b9a;
             padding: 2px 8px;
             border-radius: 12px;
             font-weight: bold;
@@ -177,10 +186,15 @@
 
         .edit-actions {
             display: flex;
+            flex-direction: column;
             gap: 10px;
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px dashed #ccc;
+        }
+        .edit-actions .action-row {
+            display: flex;
+            gap: 10px;
         }
         .edit-actions select {
             flex: 1;
@@ -197,6 +211,14 @@
             padding: 8px 12px;
             cursor: pointer;
             font-weight: bold;
+        }
+        .personal-rating-input {
+            width: 80px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            font-family: inherit;
+            text-align: center;
         }
 
         .fab {
@@ -319,7 +341,6 @@
         <button class="tab-btn" onclick="renderGames('wishlist', this)">ווישליסט</button>
     </div>
 
-    <!-- כפתור הסינון החדש -->
     <button id="filter-players-btn" class="filter-btn" onclick="filterByPlayers()">👥 בחר משחק לפי כמות שחקנים</button>
 
     <div id="games-container" class="game-grid"></div>
@@ -384,22 +405,22 @@
 
     <script>
         const defaultGames = [
-            { name: "Bohnanza", cat: "favs", desc: "מסחר, מיקוח ושתילת פולים. (כולל High Bohn Plus)", players: "2-7", recPlayers: "4-5", rating: "10", playtime: "45" },
-            { name: "Cubitos", cat: "favs", desc: "מרוץ אקשן המבוסס על ניהול סיכונים וקוביות.", players: "2-4", recPlayers: "3-4", rating: "10", playtime: "45-60" },
-            { name: "My Lil' Everdell", cat: "favs", desc: "הצבת עובדים משפחתית וזורמת בעולם היער.", players: "1-4", recPlayers: "2-3", rating: "9", playtime: "30" },
-            { name: "Cascadia", cat: "favs", desc: "פאזל מרהיב של הנחת אריחים ובניית בתי גידול.", players: "1-4", recPlayers: "2-3", rating: "8", playtime: "30-45" },
-            { name: "Tacta", cat: "favs", desc: "קלפים אבסטרקטי וטקטי.", players: "2-8", recPlayers: "2-6", rating: "8", playtime: "15-30" },
-            { name: "Desperate Oasis", cat: "favs", desc: "אסטרטגיה והישרדות.", players: "2", recPlayers: "2", rating: "7.5", playtime: "30" },
-            { name: "Sushi Go Party!", cat: "favs", desc: "בחירת קלפים (Drafting) ואיסוף סטים קצבי.", players: "2-8", recPlayers: "4-6", rating: "7.5", playtime: "20" },
-            { name: "Flip 7", cat: "favs", desc: "ניהול סיכונים ומזל מותח בקלפים.", players: "2-10", recPlayers: "4-6", rating: "7.5", playtime: "20" },
-            { name: "Azul", cat: "less_used", desc: "הנחת אריחים תחרותית ומופשטת.", players: "2-4", recPlayers: "2", rating: "7", playtime: "30-45" },
-            { name: "Codenames (שם קוד)", cat: "less_used", desc: "משחק מילים, אסוציאציות וחברה.", players: "2-8", recPlayers: "6-8", rating: "7", playtime: "15" },
-            { name: "Catan", cat: "less_used", desc: "התיישבות, משאבים ומסחר קלאסי.", players: "3-4", recPlayers: "4", rating: "6", playtime: "60-120" },
-            { name: "Ticket to Ride", cat: "less_used", desc: "איסוף סטים וחיבור מסילות.", players: "2-5", recPlayers: "4-5", rating: "6", playtime: "30-60" },
-            { name: "Splendor", cat: "less_used", desc: "פיתוח מנוע אבני חן מדויק.", players: "2-4", recPlayers: "3", rating: "6", playtime: "30" },
-            { name: "Monopoly Deal", cat: "less_used", desc: "גרסת הקלפים המהירה של מונופול.", players: "2-5", recPlayers: "3-4", rating: "6", playtime: "15" },
-            { name: "Hanabi", cat: "less_used", desc: "קלפים שיתופי עם זיכרון ותקשורת מוגבלת.", players: "2-5", recPlayers: "4", rating: "5", playtime: "25" },
-            { name: "Exploding Kittens", cat: "less_used", desc: "ניהול סיכונים תחרותי ומצחיק.", players: "2-5", recPlayers: "4-5", rating: "3", playtime: "15" },
+            { name: "Bohnanza", cat: "favs", desc: "מסחר, מיקוח ושתילת פולים. (כולל High Bohn Plus)", players: "2-7", recPlayers: "4-5", rating: "7.0", personalRating: "10", playtime: "45" },
+            { name: "Cubitos", cat: "favs", desc: "מרוץ אקשן המבוסס על ניהול סיכונים וקוביות.", players: "2-4", recPlayers: "3-4", rating: "7.6", personalRating: "10", playtime: "45-60" },
+            { name: "My Lil' Everdell", cat: "favs", desc: "הצבת עובדים משפחתית וזורמת בעולם היער.", players: "1-4", recPlayers: "2-3", rating: "7.5", personalRating: "9", playtime: "30" },
+            { name: "Cascadia", cat: "favs", desc: "פאזל מרהיב של הנחת אריחים ובניית בתי גידול.", players: "1-4", recPlayers: "2-3", rating: "8.0", personalRating: "8", playtime: "30-45" },
+            { name: "Tacta", cat: "favs", desc: "קלפים אבסטרקטי וטקטי.", players: "2-8", recPlayers: "2-6", rating: "טרם דורג", personalRating: "8", playtime: "15-30" },
+            { name: "Desperate Oasis", cat: "favs", desc: "אסטרטגיה והישרדות.", players: "2", recPlayers: "2", rating: "טרם דורג", personalRating: "7.5", playtime: "30" },
+            { name: "Sushi Go Party!", cat: "favs", desc: "בחירת קלפים (Drafting) ואיסוף סטים קצבי.", players: "2-8", recPlayers: "4-6", rating: "7.5", personalRating: "7.5", playtime: "20" },
+            { name: "Flip 7", cat: "favs", desc: "ניהול סיכונים ומזל מותח בקלפים.", players: "2-10", recPlayers: "4-6", rating: "טרם דורג", personalRating: "7.5", playtime: "20" },
+            { name: "Azul", cat: "less_used", desc: "הנחת אריחים תחרותית ומופשטת.", players: "2-4", recPlayers: "2", rating: "7.8", personalRating: "7", playtime: "30-45" },
+            { name: "Codenames (שם קוד)", cat: "less_used", desc: "משחק מילים, אסוציאציות וחברה.", players: "2-8", recPlayers: "6-8", rating: "7.5", personalRating: "7", playtime: "15" },
+            { name: "Catan", cat: "less_used", desc: "התיישבות, משאבים ומסחר קלאסי.", players: "3-4", recPlayers: "4", rating: "7.1", personalRating: "6", playtime: "60-120" },
+            { name: "Ticket to Ride", cat: "less_used", desc: "איסוף סטים וחיבור מסילות.", players: "2-5", recPlayers: "4-5", rating: "7.4", personalRating: "6", playtime: "30-60" },
+            { name: "Splendor", cat: "less_used", desc: "פיתוח מנוע אבני חן מדויק.", players: "2-4", recPlayers: "3", rating: "7.4", personalRating: "6", playtime: "30" },
+            { name: "Monopoly Deal", cat: "less_used", desc: "גרסת הקלפים המהירה של מונופול.", players: "2-5", recPlayers: "3-4", rating: "6.9", personalRating: "6", playtime: "15" },
+            { name: "Hanabi", cat: "less_used", desc: "קלפים שיתופי עם זיכרון ותקשורת מוגבלת.", players: "2-5", recPlayers: "4", rating: "7.1", personalRating: "5", playtime: "25" },
+            { name: "Exploding Kittens", cat: "less_used", desc: "ניהול סיכונים תחרותי ומצחיק.", players: "2-5", recPlayers: "4-5", rating: "6.0", personalRating: "3", playtime: "15" },
             { name: "Sail", cat: "unplayed", desc: "קלפים שיתופי (Trick-taking) מותח בסערה. (בדרך)", players: "2", recPlayers: "2", rating: "7.6", playtime: "20" },
             { name: "קטאן יורדי הים", cat: "unplayed", desc: "הרחבה לקטאן המוסיפה ספינות, חקר איים חדשים ותרחישים.", players: "3-4", recPlayers: "3-4", rating: "7.4", playtime: "90-120" },
             { name: "האי הנעלם", cat: "unplayed", desc: "שיתופי, הישרדות ואיסוף אוצרות מאי שוקע.", players: "2-4", recPlayers: "3-4", rating: "7.3", playtime: "30" },
@@ -412,10 +433,10 @@
             { name: "Tiny Towns", cat: "friends", desc: "פאזל משאבים ותכנון מרחבי.", players: "1-6", recPlayers: "3-4", rating: "8", playtime: "45" },
             { name: "Adulthood", cat: "friends", desc: "קלפים העוסק בחוויות חיים.", players: "2-6", recPlayers: "3-4", rating: "8", playtime: "30-45" },
             { name: "Harmonies", cat: "friends", desc: "בניית תבניות ויצירת נופים אסטרטגית.", players: "1-4", recPlayers: "2-3", rating: "7", playtime: "30-45" },
-            { name: "Scout", cat: "friends", desc: "משחק קלפים מבריק של טיפוס ואיסוף (ללא סידור היד).", players: "2-5", recPlayers: "4-5", rating: "טרם דורג (BGG: 7.8)", playtime: "15" },
-            { name: "Hot Streak", cat: "friends", desc: "משחק מסיבה/הימורים כאוטי על מרוצים.", players: "2-9", recPlayers: "4-8", rating: "טרם דורג (BGG: 8.0)", playtime: "15-30" },
-            { name: "Magical Athlete", cat: "friends", desc: "מרוץ פנטזיה קליל ומשעשע.", players: "2-6", recPlayers: "4-5", rating: "טרם דורג (BGG: 6.5)", playtime: "30-45" },
-            { name: "Agent Avenue", cat: "friends", desc: "משחק איסוף סטים, הערכות וניהול סיכונים מהיר לשני שחקנים.", players: "2", recPlayers: "2", rating: "טרם דורג (BGG: 7.0)", playtime: "20" },
+            { name: "Scout", cat: "friends", desc: "משחק קלפים מבריק של טיפוס ואיסוף (ללא סידור היד).", players: "2-5", recPlayers: "4-5", rating: "7.8", playtime: "15" },
+            { name: "Hot Streak", cat: "friends", desc: "משחק מסיבה/הימורים כאוטי על מרוצים.", players: "2-9", recPlayers: "4-8", rating: "8.0", playtime: "15-30" },
+            { name: "Magical Athlete", cat: "friends", desc: "מרוץ פנטזיה קליל ומשעשע.", players: "2-6", recPlayers: "4-5", rating: "6.5", playtime: "30-45" },
+            { name: "Agent Avenue", cat: "friends", desc: "משחק איסוף סטים, הערכות וניהול סיכונים מהיר לשני שחקנים.", players: "2", recPlayers: "2", rating: "7.0", playtime: "20" },
             { name: "The Quacks of Quedlinburg", cat: "wishlist", desc: "משחק ניהול סיכונים קורע מצחוק שבו רוקחים שיקויים.", players: "2-4", recPlayers: "4", rating: "7.8", playtime: "45" },
             { name: "Heat: Pedal to the Metal", cat: "wishlist", desc: "מרוץ מכוניות מבריק המבוסס על ניהול קלפים.", players: "1-6", recPlayers: "5-6", rating: "8.1", playtime: "60" },
             { name: "Zoo Vadis", cat: "wishlist", desc: "משא ומתן פוליטי, כולם סוחרים ומשחדים בגן החיות.", players: "3-7", recPlayers: "6-7", rating: "7.9", playtime: "20-40" },
@@ -442,7 +463,8 @@
             { name: "Hive", cat: "wishlist", desc: "משחק אסטרטגיה מופשט מבריק ללא לוח, שבו מזיזים אריחי חרקים.", players: "2", recPlayers: "2", rating: "7.3", playtime: "20" },
             { name: "Rivals of Catan", cat: "wishlist", desc: "הגרסה הזוגית המעולה של קטאן המבוססת על קלפים.", players: "2", recPlayers: "2", rating: "7.2", playtime: "45-60" },
             { name: "Fire Tower", cat: "wishlist", desc: "משחק מהיר בו מכוונים שריפת יער לעבר המגדלים של היריבים.", players: "2-4", recPlayers: "4", rating: "7.3", playtime: "15-30" },
-            { name: "Colt Express", cat: "wishlist", desc: "משחק תכנות מהלכים כאוטי המתרחש על גבי רכבת תלת-ממדית.", players: "2-6", recPlayers: "5-6", rating: "7.2", playtime: "40" }
+            { name: "Colt Express", cat: "wishlist", desc: "משחק תכנות מהלכים כאוטי המתרחש על גבי רכבת תלת-ממדית.", players: "2-6", recPlayers: "5-6", rating: "7.2", playtime: "40" },
+            { name: "Imperium: Classics", cat: "wishlist", desc: "משחק בניית חפיסות א-סימטרי ומעמיק, שבו כל שחקן מוביל ציוויליזציה היסטורית.", players: "1-4", recPlayers: "1-2", rating: "8.1", playtime: "60-120" }
         ];
 
         let games = [];
@@ -481,9 +503,7 @@
                 games[gameIndex].cat = newCat;
                 saveToLocal(); 
                 
-                if(currentCategory === 'filter') {
-                    // אם אנחנו במצב סינון, נשאיר את הכרטיסייה במקום ורק נעדכן שמירה
-                } else {
+                if(currentCategory !== 'filter') {
                     const activeBtn = document.querySelector('.tab-btn.active');
                     renderGames(currentCategory, activeBtn);
                 }
@@ -508,19 +528,34 @@
             }
         }
 
-        // פונקציית עזר ליצירת כרטיסיית משחק (מונעת שכפול קוד)
+        function updatePersonalRating(event, gameName, newRating) {
+            event.stopPropagation();
+            const gameIndex = games.findIndex(g => g.name === gameName);
+            if(gameIndex > -1) {
+                games[gameIndex].personalRating = newRating;
+                saveToLocal(); 
+                
+                if(currentCategory !== 'filter') {
+                    const activeBtn = document.querySelector('.tab-btn.active');
+                    renderGames(currentCategory, activeBtn);
+                }
+            }
+        }
+
         function createCardElement(game, category) {
             const card = document.createElement('div');
             card.className = 'game-card';
             card.onclick = function() { toggleDetails(this); };
             
-            let ratingDisplay = `<span class="rating-badge">⭐ ${game.rating}</span>`;
-            if(game.rating.includes("טרם דורג") || game.rating === "?") {
-                ratingDisplay = `<span class="rating-badge">${game.rating}</span>`;
-            }
+            let ratingDisplay = '';
             
-            if(category === 'wishlist' || category === 'unplayed' || category === 'filter') {
-                ratingDisplay = `<span class="rating-badge">⭐ BGG: ${game.rating}</span>`;
+            // תצוגת דירוג מותאמת אישית למשחקים באוסף
+            if (game.cat === 'favs' || game.cat === 'less_used') {
+                const pr = game.personalRating && game.personalRating !== '?' && game.personalRating !== '' ? game.personalRating : 'טרם דורג';
+                ratingDisplay = `<span class="personal-rating-badge">⭐ אישי: ${pr}</span> <span class="rating-badge">⭐ BGG: ${game.rating || '?'}</span>`;
+            } else {
+                let r = game.rating || '?';
+                ratingDisplay = `<span class="rating-badge">⭐ BGG: ${r}</span>`;
             }
             
             let recPlayersDisplay = game.recPlayers && game.recPlayers !== '?' ? `<span class="rec-players">(מומלץ: ${game.recPlayers})</span>` : '';
@@ -528,16 +563,33 @@
 
             let editHtml = '';
             if(isEditMode) {
+                let personalRatingInput = '';
+                // שדה עריכת דירוג אישי יופיע רק אם המשחק באוסף
+                if (game.cat === 'favs' || game.cat === 'less_used') {
+                    personalRatingInput = `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                        <label style="font-size:14px; font-weight:bold; color:#6a1b9a;">דירוג אישי:</label>
+                        <input type="number" step="0.5" min="1" max="10" class="personal-rating-input" 
+                               value="${game.personalRating || ''}" placeholder="1-10"
+                               onchange="updatePersonalRating(event, '${game.name.replace(/'/g, "\\'")}', this.value)"
+                               onclick="event.stopPropagation()">
+                    </div>
+                    `;
+                }
+
                 editHtml = `
                 <div class="edit-actions">
-                    <select onchange="moveGame(event, '${game.name.replace(/'/g, "\\'")}', this.value)" onclick="event.stopPropagation()">
-                        <option value="favs" ${game.cat === 'favs' ? 'selected' : ''}>מועדפים</option>
-                        <option value="less_used" ${game.cat === 'less_used' ? 'selected' : ''}>פחות בשימוש</option>
-                        <option value="unplayed" ${game.cat === 'unplayed' ? 'selected' : ''}>טרם שיחקתי / בדרך</option>
-                        <option value="friends" ${game.cat === 'friends' ? 'selected' : ''}>אצל חברים</option>
-                        <option value="wishlist" ${game.cat === 'wishlist' ? 'selected' : ''}>ווישליסט</option>
-                    </select>
-                    <button class="delete-btn" onclick="deleteGame(event, '${game.name.replace(/'/g, "\\'")}')">🗑️ מחיקה</button>
+                    <div class="action-row">
+                        <select onchange="moveGame(event, '${game.name.replace(/'/g, "\\'")}', this.value)" onclick="event.stopPropagation()">
+                            <option value="favs" ${game.cat === 'favs' ? 'selected' : ''}>מועדפים</option>
+                            <option value="less_used" ${game.cat === 'less_used' ? 'selected' : ''}>פחות בשימוש</option>
+                            <option value="unplayed" ${game.cat === 'unplayed' ? 'selected' : ''}>טרם שיחקתי / בדרך</option>
+                            <option value="friends" ${game.cat === 'friends' ? 'selected' : ''}>אצל חברים</option>
+                            <option value="wishlist" ${game.cat === 'wishlist' ? 'selected' : ''}>ווישליסט</option>
+                        </select>
+                        <button class="delete-btn" onclick="deleteGame(event, '${game.name.replace(/'/g, "\\'")}')">🗑️ מחיקה</button>
+                    </div>
+                    ${personalRatingInput}
                 </div>
                 `;
             }
@@ -561,6 +613,7 @@
             return card;
         }
 
+        // --- פונקציית מיון אוניברסלית לכל הקטגוריות ---
         function renderGames(category, btnElement) {
             currentCategory = category;
             
@@ -574,21 +627,29 @@
             
             let filtered = games.filter(g => g.cat === category);
             
-            if(category === 'unplayed') {
-                filtered.sort((a, b) => {
-                    const ratingA = parseFloat(a.rating) || 0;
-                    const ratingB = parseFloat(b.rating) || 0;
-                    return ratingB - ratingA;
-                });
-            }
+            // מיון אוטומטי לכל קטגוריה: מהדירוג הגבוה לנמוך
+            filtered.sort((a, b) => {
+                let ratingA = 0;
+                let ratingB = 0;
+
+                // אם המשחק באוסף, נמיין לפי דירוג אישי (ואם אין, לפי BGG)
+                if (category === 'favs' || category === 'less_used') {
+                    ratingA = a.personalRating && a.personalRating !== '?' ? parseFloat(a.personalRating) : (parseFloat(a.rating) || 0);
+                    ratingB = b.personalRating && b.personalRating !== '?' ? parseFloat(b.personalRating) : (parseFloat(b.rating) || 0);
+                } else {
+                    // לשאר הקטגוריות נמיין לפי דירוג BGG
+                    ratingA = parseFloat(a.rating) || 0;
+                    ratingB = parseFloat(b.rating) || 0;
+                }
+
+                return ratingB - ratingA;
+            });
 
             filtered.forEach((game) => {
                 container.appendChild(createCardElement(game, category));
             });
         }
 
-        // --- הפונקציה החדשה לסינון לפי מספר שחקנים ---
-                // --- פונקציית עזר לבדיקת טווח שחקנים ---
         function isPlayerCountValid(playersStr, num) {
             if (!playersStr || playersStr === '?') return false;
             let min = 0, max = 0;
@@ -606,7 +667,6 @@
             return num >= min && num <= max;
         }
 
-        // --- פונקציה חדשה: בודקת אם המספר נמצא בטווח "המומלץ ביותר" ---
         function isRecommended(recStr, num) {
             if (!recStr || recStr === '?') return false;
             let min = 0, max = 0;
@@ -624,7 +684,6 @@
             return num >= min && num <= max;
         }
 
-        // --- פונקציית הסינון המעודכנת (מיון לפי מומלץ ואז דירוג) ---
         function filterByPlayers() {
             const input = prompt("כמה שחקנים אתם הערב?");
             if (!input) return; 
@@ -652,20 +711,17 @@
                 return;
             }
 
-            // הלוגיקה החדשה: מיון קודם לפי "מומלץ" ואז לפי דירוג
             validGames.sort((a, b) => {
                 const aRec = isRecommended(a.recPlayers, num);
                 const bRec = isRecommended(b.recPlayers, num);
                 
-                // אם א' מומלץ וב' לא - א' יופיע קודם
                 if (aRec && !bRec) return -1;
-                // אם ב' מומלץ וא' לא - ב' יופיע קודם
                 if (!aRec && bRec) return 1;
                 
-                // אם שניהם מומלצים (או שניהם לא מומלצים), נמיין לפי הדירוג
-                const ratingA = parseFloat(a.rating) || 0;
-                const ratingB = parseFloat(b.rating) || 0;
-                return ratingB - ratingA; // דירוג גבוה יופיע קודם
+                // בסינון מתוך האוסף, נמיין פנימית גם כן לפי דירוג אישי
+                const ratingA = a.personalRating && a.personalRating !== '?' ? parseFloat(a.personalRating) : (parseFloat(a.rating) || 0);
+                const ratingB = b.personalRating && b.personalRating !== '?' ? parseFloat(b.personalRating) : (parseFloat(b.rating) || 0);
+                return ratingB - ratingA; 
             });
 
             const title = document.createElement('h3');
@@ -679,8 +735,6 @@
                 container.appendChild(createCardElement(game, 'filter'));
             });
         }
-
-        // ------------------------------------------------
 
         function toggleDetails(element) {
             const details = element.querySelector('.game-details');
