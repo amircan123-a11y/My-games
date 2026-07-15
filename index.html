@@ -412,7 +412,7 @@
             { name: "Tacta", cat: "favs", desc: "קלפים אבסטרקטי וטקטי.", players: "2-8", recPlayers: "2-6", rating: "טרם דורג", personalRating: "8", playtime: "15-30" },
             { name: "Desperate Oasis", cat: "favs", desc: "אסטרטגיה והישרדות.", players: "2", recPlayers: "2", rating: "טרם דורג", personalRating: "7.5", playtime: "30" },
             { name: "Sushi Go Party!", cat: "favs", desc: "בחירת קלפים (Drafting) ואיסוף סטים קצבי.", players: "2-8", recPlayers: "4-6", rating: "7.5", personalRating: "7.5", playtime: "20" },
-            { name: "Flip 7", cat: "favs", desc: "ניהול סיכונים ומזל מותח בקלפים.", players: "2-10", recPlayers: "4-6", rating: "טרם דורג", personalRating: "7.5", playtime: "20" },
+            { name: "Flip 7", cat: "favs", desc: "ניהול סיכונים ומזל מותח בקלפים.", players: "2-10", recPlayers: "4-6", rating: "7.5", personalRating: "7.5", playtime: "20" },
             { name: "Azul", cat: "less_used", desc: "הנחת אריחים תחרותית ומופשטת.", players: "2-4", recPlayers: "2", rating: "7.8", personalRating: "7", playtime: "30-45" },
             { name: "Codenames (שם קוד)", cat: "less_used", desc: "משחק מילים, אסוציאציות וחברה.", players: "2-8", recPlayers: "6-8", rating: "7.5", personalRating: "7", playtime: "15" },
             { name: "Catan", cat: "less_used", desc: "התיישבות, משאבים ומסחר קלאסי.", players: "3-4", recPlayers: "4", rating: "7.1", personalRating: "6", playtime: "60-120" },
@@ -469,16 +469,33 @@
 
         let games = [];
         
+        // מנגנון הגירה גרסה 3: מתקן את הדירוגים למי שהיה לו דירוג אישי במקום דירוג BGG
+        const savedDataV3 = localStorage.getItem('myBoardGamesApp_v3');
         const savedDataV2 = localStorage.getItem('myBoardGamesApp_v2');
-        if (savedDataV2) {
-            games = JSON.parse(savedDataV2);
+        
+        if (savedDataV3) {
+            games = JSON.parse(savedDataV3);
+        } else if (savedDataV2) {
+            let oldGames = JSON.parse(savedDataV2);
+            games = oldGames.map(oldGame => {
+                const defaultGame = defaultGames.find(dg => dg.name === oldGame.name);
+                if (defaultGame) {
+                    return {
+                        ...oldGame,
+                        rating: defaultGame.rating, 
+                        personalRating: oldGame.personalRating ? oldGame.personalRating : defaultGame.personalRating
+                    };
+                }
+                return oldGame;
+            });
+            localStorage.setItem('myBoardGamesApp_v3', JSON.stringify(games));
         } else {
             games = [...defaultGames];
-            localStorage.setItem('myBoardGamesApp_v2', JSON.stringify(games));
+            localStorage.setItem('myBoardGamesApp_v3', JSON.stringify(games));
         }
 
         function saveToLocal() {
-            localStorage.setItem('myBoardGamesApp_v2', JSON.stringify(games));
+            localStorage.setItem('myBoardGamesApp_v3', JSON.stringify(games));
         }
 
         let currentCategory = 'favs';
@@ -549,7 +566,6 @@
             
             let ratingDisplay = '';
             
-            // תצוגת דירוג מותאמת אישית למשחקים באוסף
             if (game.cat === 'favs' || game.cat === 'less_used') {
                 const pr = game.personalRating && game.personalRating !== '?' && game.personalRating !== '' ? game.personalRating : 'טרם דורג';
                 ratingDisplay = `<span class="personal-rating-badge">⭐ אישי: ${pr}</span> <span class="rating-badge">⭐ BGG: ${game.rating || '?'}</span>`;
@@ -564,12 +580,11 @@
             let editHtml = '';
             if(isEditMode) {
                 let personalRatingInput = '';
-                // שדה עריכת דירוג אישי יופיע רק אם המשחק באוסף
                 if (game.cat === 'favs' || game.cat === 'less_used') {
                     personalRatingInput = `
                     <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                         <label style="font-size:14px; font-weight:bold; color:#6a1b9a;">דירוג אישי:</label>
-                        <input type="number" step="0.5" min="1" max="10" class="personal-rating-input" 
+                        <input type="number" step="0.1" min="1" max="10" class="personal-rating-input" 
                                value="${game.personalRating || ''}" placeholder="1-10"
                                onchange="updatePersonalRating(event, '${game.name.replace(/'/g, "\\'")}', this.value)"
                                onclick="event.stopPropagation()">
@@ -613,7 +628,6 @@
             return card;
         }
 
-        // --- פונקציית מיון אוניברסלית לכל הקטגוריות ---
         function renderGames(category, btnElement) {
             currentCategory = category;
             
@@ -627,17 +641,14 @@
             
             let filtered = games.filter(g => g.cat === category);
             
-            // מיון אוטומטי לכל קטגוריה: מהדירוג הגבוה לנמוך
             filtered.sort((a, b) => {
                 let ratingA = 0;
                 let ratingB = 0;
 
-                // אם המשחק באוסף, נמיין לפי דירוג אישי (ואם אין, לפי BGG)
                 if (category === 'favs' || category === 'less_used') {
                     ratingA = a.personalRating && a.personalRating !== '?' ? parseFloat(a.personalRating) : (parseFloat(a.rating) || 0);
                     ratingB = b.personalRating && b.personalRating !== '?' ? parseFloat(b.personalRating) : (parseFloat(b.rating) || 0);
                 } else {
-                    // לשאר הקטגוריות נמיין לפי דירוג BGG
                     ratingA = parseFloat(a.rating) || 0;
                     ratingB = parseFloat(b.rating) || 0;
                 }
@@ -718,7 +729,6 @@
                 if (aRec && !bRec) return -1;
                 if (!aRec && bRec) return 1;
                 
-                // בסינון מתוך האוסף, נמיין פנימית גם כן לפי דירוג אישי
                 const ratingA = a.personalRating && a.personalRating !== '?' ? parseFloat(a.personalRating) : (parseFloat(a.rating) || 0);
                 const ratingB = b.personalRating && b.personalRating !== '?' ? parseFloat(b.personalRating) : (parseFloat(b.rating) || 0);
                 return ratingB - ratingA; 
