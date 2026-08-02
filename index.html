@@ -408,7 +408,6 @@
     </div>
 
     <script>
-        // הרשימה המלאה והמקיפה! ללא שום קיצורים כדי למנוע מחיקה
         const defaultGames = [
             { name: "Bohnanza", cat: "favs", desc: "מסחר, מיקוח ושתילת פולים. (כולל High Bohn Plus)", players: "2-7", recPlayers: "4-5", rating: "7.0", personalRating: "10", playtime: "45", owner: "" },
             { name: "Cubitos", cat: "favs", desc: "מרוץ אקשן המבוסס על ניהול סיכונים וקוביות.", players: "2-4", recPlayers: "3-4", rating: "7.6", personalRating: "10", playtime: "45-60", owner: "" },
@@ -418,6 +417,7 @@
             { name: "Desperate Oasis", cat: "favs", desc: "אסטרטגיה והישרדות.", players: "2", recPlayers: "2", rating: "7.2", personalRating: "7.5", playtime: "30", owner: "" },
             { name: "Sushi Go Party!", cat: "favs", desc: "בחירת קלפים (Drafting) ואיסוף סטים קצבי.", players: "2-8", recPlayers: "4-6", rating: "7.5", personalRating: "7.5", playtime: "20", owner: "" },
             { name: "Flip 7", cat: "favs", desc: "ניהול סיכונים ומזל מותח בקלפים.", players: "2-10", recPlayers: "4-6", rating: "7.5", personalRating: "7.5", playtime: "20", owner: "" },
+            
             { name: "Azul", cat: "less_used", desc: "הנחת אריחים תחרותית ומופשטת.", players: "2-4", recPlayers: "2", rating: "7.8", personalRating: "7", playtime: "30-45", owner: "" },
             { name: "Codenames (שם קוד)", cat: "less_used", desc: "משחק מילים, אסוציאציות וחברה.", players: "2-8", recPlayers: "6-8", rating: "7.5", personalRating: "7", playtime: "15", owner: "" },
             { name: "Catan", cat: "less_used", desc: "התיישבות, משאבים ומסחר קלאסי.", players: "3-4", recPlayers: "4", rating: "7.1", personalRating: "6", playtime: "60-120", owner: "" },
@@ -426,12 +426,14 @@
             { name: "Monopoly Deal", cat: "less_used", desc: "גרסת הקלפים המהירה של מונופול.", players: "2-5", recPlayers: "3-4", rating: "6.9", personalRating: "6", playtime: "15", owner: "" },
             { name: "Hanabi", cat: "less_used", desc: "קלפים שיתופי עם זיכרון ותקשורת מוגבלת.", players: "2-5", recPlayers: "4", rating: "7.1", personalRating: "5", playtime: "25", owner: "" },
             { name: "Exploding Kittens", cat: "less_used", desc: "ניהול סיכונים תחרותי ומצחיק.", players: "2-5", recPlayers: "4-5", rating: "6.0", personalRating: "3", playtime: "15", owner: "" },
+            
             { name: "Sail", cat: "unplayed", desc: "קלפים שיתופי (Trick-taking) מותח בסערה. (בדרך)", players: "2", recPlayers: "2", rating: "7.6", playtime: "20", owner: "" },
             { name: "קטאן יורדי הים", cat: "unplayed", desc: "הרחבה לקטאן המוסיפה ספינות, חקר איים חדשים ותרחישים.", players: "3-4", recPlayers: "3-4", rating: "7.4", playtime: "90-120", owner: "" },
             { name: "האי הנעלם", cat: "unplayed", desc: "שיתופי, הישרדות ואיסוף אוצרות מאי שוקע.", players: "2-4", recPlayers: "3-4", rating: "7.3", playtime: "30", owner: "" },
             { name: "Coyote", cat: "unplayed", desc: "משחק קלפים, בלופים והערכות.", players: "3-6", recPlayers: "5-6", rating: "6.9", playtime: "20", owner: "" },
             { name: "5211 (Azul Edition)", cat: "unplayed", desc: "קלפים מהיר, טקטי ומבוסס בלופים. (בדרך)", players: "2-5", recPlayers: "4-5", rating: "6.7", playtime: "15", owner: "" },
             { name: "Bohnanza: Pirates & Princesses", cat: "unplayed", desc: "וריאציה של המשחק המוכר עם טוויסט.", players: "4-5", recPlayers: "4-5", rating: "6.5", playtime: "45", owner: "" },
+            
             { name: "Rebirth", cat: "friends", desc: "אסטרטגיה והנחת אריחים (קניציה).", players: "2-4", recPlayers: "3-4", rating: "7.5", personalRating: "10", playtime: "45-60", owner: "חבר" },
             { name: "Everdell", cat: "friends", desc: "הצבת עובדים ובניית שילובים בעולם חי ומרהיב.", players: "1-4", recPlayers: "3", rating: "8.0", personalRating: "9", playtime: "40-80", owner: "חבר" },
             { name: "Sea Salt & Paper", cat: "friends", desc: "איסוף סטים, ניהול סיכונים וקלפים.", players: "2-4", recPlayers: "2", rating: "7.5", personalRating: "9", playtime: "30", owner: "חבר" },
@@ -442,6 +444,8 @@
             { name: "Hot Streak", cat: "friends", desc: "משחק מסיבה/הימורים כאוטי על מרוצים.", players: "2-9", recPlayers: "4-8", rating: "8.0", personalRating: "7", playtime: "15-30", owner: "חבר" },
             { name: "Magical Athlete", cat: "friends", desc: "מרוץ פנטזיה קליל ומשעשע.", players: "2-6", recPlayers: "4-5", rating: "6.5", personalRating: "6", playtime: "30-45", owner: "חבר" },
             { name: "Agent Avenue", cat: "friends", desc: "משחק איסוף סטים, הערכות וניהול סיכונים מהיר לשני שחקנים.", players: "2", recPlayers: "2", rating: "7.0", personalRating: "7", playtime: "20", owner: "חבר" },
+            
+            // --- הווישליסט המלא והמעודכן ---
             { name: "Sky Team", cat: "wishlist", desc: "חוויה שיתופית ייחודית ומתוחה לזוג.", players: "2", recPlayers: "2", rating: "8.3", playtime: "15-30", owner: "" },
             { name: "7 Wonders Duel", cat: "wishlist", desc: "פיתוח תרבות ומשאבים בגרסה זוגית מופתית ומותחת.", players: "2", recPlayers: "2", rating: "8.1", playtime: "30", owner: "" },
             { name: "Imperium: Classics", cat: "wishlist", desc: "משחק בניית חפיסות א-סימטרי ומעמיק, כל שחקן מוביל ציוויליזציה.", players: "1-4", recPlayers: "1-2", rating: "8.1", playtime: "60-120", owner: "" },
@@ -481,53 +485,57 @@
             { name: "Celestia", cat: "wishlist", desc: "משחק חברה קליל של ניהול סיכונים קבוצתי.", players: "2-6", recPlayers: "4-6", rating: "6.8", playtime: "30", owner: "" },
             { name: "Botswana", cat: "wishlist", desc: "משחק קלפים קליל וטקטי של מניפולציית שוק.", players: "2-5", recPlayers: "3-4", rating: "6.8", playtime: "30", owner: "" },
             { name: "Eternal Decks", cat: "wishlist", desc: "מבוסס בניית חפיסות (שיתוף פעולה).", players: "1-4", recPlayers: "2-4", rating: "6.5", playtime: "30-60", owner: "" }
-            }
+        ];
 
         let games = [];
         
-        // מנגנון הגירה גרסה 6: סריקה מלאה של כל זכרונות העבר כדי להציל את הנתונים שלך!
-        let allSavedGamesMap = new Map();
+        // מנגנון הגירה גרסה 7: מוודא שהמשחקים החדשים נשארים ובודק דירוגים אישיים קודמים
+        const savedDataV7 = localStorage.getItem('myBoardGamesApp_v7');
         
-        // פונקציית חילוץ - שואבת את המשחקים מכל קובץ שמירה אפשרי
-        function extractGamesFromSave(dataStr) {
-            if (!dataStr) return;
-            try {
-                let parsed = JSON.parse(dataStr);
-                parsed.forEach(g => {
-                    // שומרים רק את הגרסה המעודכנת ביותר לכל שם של משחק
-                    if (!allSavedGamesMap.has(g.name)) {
-                        allSavedGamesMap.set(g.name, g);
-                    }
-                });
-            } catch(e) {}
-        }
-        
-        // נשאב את הנתונים מהגרסאות הישנות (שם הכל עבד) עד לגרסאות החדשות
-        extractGamesFromSave(localStorage.getItem('myBoardGamesApp_v1'));
-        extractGamesFromSave(localStorage.getItem('myBoardGamesApp_v2'));
-        extractGamesFromSave(localStorage.getItem('myBoardGamesApp_v3'));
-        extractGamesFromSave(localStorage.getItem('myBoardGamesApp_v4'));
-        extractGamesFromSave(localStorage.getItem('myBoardGamesApp_v5'));
-        
-        // מוסיף חזרה את הרשימה המלאה והמקורית כבסיס בטוח (למקרה שמשהו נמחק לגמרי מהזיכרון)
-        defaultGames.forEach(g => {
-            if (!allSavedGamesMap.has(g.name)) {
-                allSavedGamesMap.set(g.name, g);
-            } else {
-                let existing = allSavedGamesMap.get(g.name);
-                existing.rating = g.rating; // עדכון BGG מהרשימה המלאה
-                if (existing.cat === 'favs' || existing.cat === 'less_used' || existing.cat === 'friends') {
-                    existing.personalRating = existing.personalRating || g.personalRating;
+        if (savedDataV7) {
+            games = JSON.parse(savedDataV7);
+            
+            // מוודא שאף משחק מהווישליסט המקורי לא חסר במקרה שהייתה מחיקה בטעות
+            defaultGames.forEach(dg => {
+                if (!games.find(g => g.name === dg.name)) {
+                    games.push(dg);
                 }
-                if (existing.owner === undefined) existing.owner = "";
-            }
-        });
-        
-        games = Array.from(allSavedGamesMap.values());
-        localStorage.setItem('myBoardGamesApp_v6', JSON.stringify(games));
+            });
+            localStorage.setItem('myBoardGamesApp_v7', JSON.stringify(games));
+        } else {
+            // אם זו פעם ראשונה שמריצים את גרסה 7, נמשוך שמירות קודמות כדי להציל דירוגים אישיים
+            let previousGames = [];
+            try {
+                const oldSave = localStorage.getItem('myBoardGamesApp_v6') || localStorage.getItem('myBoardGamesApp_v5') || localStorage.getItem('myBoardGamesApp_v4');
+                if (oldSave) previousGames = JSON.parse(oldSave);
+            } catch(e) {}
+
+            games = defaultGames.map(defaultGame => {
+                const oldGame = previousGames.find(g => g.name === defaultGame.name);
+                if (oldGame) {
+                    // שומרים על הקטגוריה, הדירוג האישי ושם הבעלים מהשמירה הישנה
+                    return {
+                        ...defaultGame,
+                        cat: oldGame.cat || defaultGame.cat,
+                        personalRating: oldGame.personalRating || defaultGame.personalRating,
+                        owner: oldGame.owner || defaultGame.owner
+                    };
+                }
+                return defaultGame;
+            });
+            
+            // הוספת משחקים שהמשתמש הוסיף בעצמו ולא קיימים ברשימת הבסיס
+            previousGames.forEach(oldGame => {
+                if (!games.find(g => g.name === oldGame.name)) {
+                    games.push(oldGame);
+                }
+            });
+
+            localStorage.setItem('myBoardGamesApp_v7', JSON.stringify(games));
+        }
 
         function saveToLocal() {
-            localStorage.setItem('myBoardGamesApp_v6', JSON.stringify(games));
+            localStorage.setItem('myBoardGamesApp_v7', JSON.stringify(games));
         }
 
         let currentCategory = 'favs';
