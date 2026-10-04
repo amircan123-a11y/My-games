@@ -30,10 +30,9 @@
         }
         .header h1 { margin: 0; font-size: 24px; }
         
-        .edit-btn {
+        .action-btn {
             position: absolute;
             top: 15px;
-            left: 15px;
             background: rgba(255, 255, 255, 0.2);
             border: none;
             border-radius: 50%;
@@ -46,7 +45,9 @@
             align-items: center;
             justify-content: center;
         }
-        .edit-btn.active-edit {
+        .edit-btn { left: 15px; }
+        .backup-btn { right: 15px; font-size: 18px; }
+        .active-edit {
             background: rgba(255, 255, 255, 0.8);
             transform: scale(1.1);
         }
@@ -245,6 +246,7 @@
             transform: scale(1.1);
         }
 
+        /* --- עיצוב מתוקן ומלא לחלונית המודאלית --- */
         .modal-overlay {
             display: none; 
             position: fixed;
@@ -252,7 +254,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(3px); 
             z-index: 2000;
             justify-content: center;
@@ -260,60 +262,71 @@
         }
 
         .modal-content {
-            background-אתה צודק במאה אחוז, מגיע לי שתכעס! אני מתנצל. 
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            position: relative;
+            direction: rtl; 
+            max-height: 85vh; 
+            overflow-y: auto;
+        }
 
-מה שקרה זה שמערכת ההגנה הפנימית שלי (זו ששומרת על זכויות יוצרים) זיהתה את התיאורים הארוכים שהעתקתי מ-BoardGameGeek כהפרת זכויות יוצרים, ופשוט "חתכה" לי את התשובה באמצע בלי אזהרה. 
-כשאתה מעתיק קוד חתוך שחסרות בו סוגריים בסוף – הדפדפן קורס ומציג **מסך לבן**.
+        .modal-content h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #333;
+        }
 
-כדי שזה לא יקרה שוב לעולם, עשיתי שני דברים:
-1. **קיצרתי משמעותית את התיאורים** של משחקי הווישליסט למילים בודדות וכלליות (תוכל לערוך אותם באפליקציה אחר כך).
-2. **הוספתי לך כפתור "💾 גיבוי הנתונים שלי"**. מעכשיו, בכל פעם שאתה עושה שינויים באפליקציה, תוכל ללחוץ עליו. הוא יעתיק לך את כל הרשימה המעודכנת כדי שתוכל להדביק אותה ישר לקוד המקור ב-GitHub – וכך בחיים לא תאבד נתונים יותר גם אם הזיכרון בטלפון יימחק.
+        .close-button {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6b7280;
+            line-height: 1;
+        }
 
-הנה הקוד המלא והתקין. **מחק את הכל** במסך הלבן שיש לך עכשיו ב-GitHub, והדבק את זה:
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-row { display: flex; gap: 10px; }
+        .half { flex: 1; }
 
-```html
-<!DOCTYPE html>
-<html dir="rtl" lang="he">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>המשחקים שלי 🎲</title>
-    <style>
-        body { font-family: system-ui, sans-serif; background-color: #f0f2f5; margin: 0; padding: 15px; color: #333; }
-        .header { background: linear-gradient(135deg, #6200ea, #9c27b0); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; position: relative; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .action-btn { background: rgba(255, 255, 255, 0.2); border: none; border-radius: 50%; font-size: 20px; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: absolute; top: 15px;}
-        .edit-btn { left: 15px; }
-        .backup-btn { right: 15px; font-size: 18px; }
-        .active-edit { background: rgba(255, 255, 255, 0.8); transform: scale(1.1); }
-        .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding-bottom: 10px; margin-bottom: 15px; }
-        .tab-btn { flex: 0 0 auto; background: #fff; border: 2px solid #e0e0e0; padding: 10px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #666; cursor: pointer; }
-        .tab-btn.active { background: #6200ea; border-color: #6200ea; color: white; }
-        .filter-btn { width: 100%; padding: 15px; background: #4CAF50; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
-        .game-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding-bottom: 80px; }
-        .game-card { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
-        .game-header { display: flex; justify-content: space-between; align-items: center; }
-        .game-title { font-size: 16px; font-weight: bold; }
-        .tag { background: #e3f2fd; color: #1976d2; padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: bold; }
-        .game-details { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; font-size: 14px; color: #555; }
-        .game-details.open { display: block; }
-        .detail-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
-        .detail-label { font-weight: bold; color: #333; }
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-weight: bold; margin-right: 5px; }
-        .badge-bgg { background: #fff3e0; color: #e65100; }
-        .badge-personal { background: #f3e5f5; color: #6a1b9a; }
-        .badge-time { background: #e3f2fd; color: #1976d2; }
-        .rec-players { color: #d32f2f; font-weight: bold; }
-        .edit-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ccc; }
-        .edit-input, .edit-actions select { padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; font-family: inherit; }
-        .fab { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: #6200ea; color: white; border: none; border-radius: 50%; font-size: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; position: relative; max-height: 85vh; overflow-y: auto; }
-        .close-button { position: absolute; top: 15px; left: 20px; font-size: 28px; cursor: pointer; }
-        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
-        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; }
-        .btn-primary { background: #4CAF50; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
-        .delete-btn { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2; border-radius: 6px; padding: 8px; cursor: pointer; font-weight: bold; }
+        .modal-content label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #374151;
+        }
+        .modal-content input, .modal-content select, .modal-content textarea {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            background-color: #fff;
+            color: #333;
+        }
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -336,868 +349,184 @@
 
     <div id="games-container" class="game-grid"></div>
 
-    <button id="fab-add-game" class="fab">+</button>
+    <button id="fab-add-game" class="fab" title="הוסף משחק חדש">+</button>
 
     <div id="game-modal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-button" id="close-modal">&times;</span>
-            <h2>הוספת משחק</h2>
+            <h2>הוספת משחק חדש</h2>
+            
             <form id="add-game-form">
-                <div class="form-group"><label>שם המשחק:</label><input type="text" id="game-title" required></div>
-                <div class="form-group"><label>קטגוריה:</label>
-                    <select id="game-category">
-                        <option value="favs">מועדפים</option><option value="less_used">פחות בשימוש</option>
-                        <option value="unplayed">בדרך</option><option value="friends">אצל חברים</option>
+                <div class="form-group">
+                    <label for="game-title">שם המשחק:</label>
+                    <input type="text" id="game-title" placeholder="לדוגמה: Cascadia" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="game-category">לאיזו קטגוריה להוסיף?</label>
+                    <select id="game-category" required>
+                        <option value="favs">מועדפים</option>
+                        <option value="less_used">פחות בשימוש</option>
+                        <option value="unplayed">טרם שיחקתי / בדרך</option>
+                        <option value="friends">אצל חברים</option>
                         <option value="wishlist" selected>ווישליסט</option>
                     </select>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1"><label>שחקנים:</label><input type="text" id="game-players" placeholder="1-4"></div>
-                    <div class="form-group" style="flex:1"><label>מומלץ:</label><input type="text" id="game-rec-players" placeholder="2-3"></div>
+
+                <div class="auto-fields" id="auto-fields-section">
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="game-players">מספר שחקנים:</label>
+                            <input type="text" id="game-players" placeholder="לדוגמה: 1-4">
+                        </div>
+                        <div class="form-group half">
+                            <label for="game-rec-players">מומלץ (BGG):</label>
+                            <input type="text" id="game-rec-players" placeholder="לדוגמה: 2-3">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="game-rating">דירוג (BGG):</label>
+                            <input type="text" id="game-rating" placeholder="לדוגמה: 8.0">
+                        </div>
+                        <div class="form-group half">
+                            <label for="game-playtime">זמן משחק (דק'):</label>
+                            <input type="text" id="game-playtime" placeholder="לדוגמה: 30-45">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="game-owner">אצל מי המשחק? (לחברים):</label>
+                        <input type="text" id="game-owner" placeholder="לדוגמה: משה">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="game-description">קצת מידע על המשחק:</label>
+                        <textarea id="game-description" rows="3" placeholder="תיאור קצר של המכניקה או הנושא..."></textarea>
+                    </div>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1"><label>דירוג BGG:</label><input type="text" id="game-rating" placeholder="8.0"></div>
-                    <div class="form-group" style="flex:1"><label>זמן (דק'):</label><input type="text" id="game-playtime" placeholder="30-45"></div>
-                </div>
-                <div class="form-group"><label>אצל מי? (לחברים):</label><input type="text" id="game-owner"></div>
-                <div class="form-group"><label>תיאור:</label><textarea id="game-description" rows="2"></textarea></div>
-                <button type="submit" class="btn-primary">שמור משחק</button>
+
+                <button type="submit" class="btn-primary">שמור ברשימה</button>
             </form>
         </div>
     </div>
 
     <script>
-        // רשימה עם תיאורים קצרים כדי למנוע חסימה
-           // העתק את הבלוק הזה והחלף איתו את המשתנה defaultGames בקוד המקור שלך
-const defaultGames = [
-  {
-    "name": "Sprawlopolis ",
-    "cat": "favs",
-    "desc": "משחק קלפים שיתופי וקומפקטי, שבו תשתמשו ב-18 קלפים בלבד כדי לבנות יחד עיר משגשגת ולעמוד באתגרי ניקוד שמשתנים בכל משחק.",
-    "players": "1-4",
-    "recPlayers": "1-2",
-    "rating": "7",
-    "playtime": "15-20",
-    "owner": "",
-    "personalRating": "7.5"
-  },
-  {
-    "name": "Bohnanza",
-    "cat": "favs",
-    "desc": "מסחר ושתילת פולים.",
-    "players": "2-7",
-    "recPlayers": "4-5",
-    "rating": "7.0",
-    "personalRating": "10",
-    "playtime": "45",
-    "owner": ""
-  },
-  {
-    "name": "Cubitos",
-    "cat": "favs",
-    "desc": "מרוץ קוביות אקשן.",
-    "players": "2-4",
-    "recPlayers": "3-4",
-    "rating": "7.6",
-    "personalRating": "10",
-    "playtime": "45-60",
-    "owner": ""
-  },
-  {
-    "name": "My Lil' Everdell",
-    "cat": "favs",
-    "desc": "הצבת עובדים משפחתית.",
-    "players": "1-4",
-    "recPlayers": "2-3",
-    "rating": "7.5",
-    "personalRating": "8",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Cascadia",
-    "cat": "favs",
-    "desc": "פאזל חיות וטבע.",
-    "players": "1-4",
-    "recPlayers": "2-3",
-    "rating": "8.0",
-    "personalRating": "8",
-    "playtime": "30-45",
-    "owner": ""
-  },
-  {
-    "name": "Tacta",
-    "cat": "less_used",
-    "desc": "קלפים אבסטרקטי.",
-    "players": "2-8",
-    "recPlayers": "2-6",
-    "rating": "7.0",
-    "personalRating": "6.5",
-    "playtime": "15-30",
-    "owner": ""
-  },
-  {
-    "name": "Desperate Oasis",
-    "cat": "favs",
-    "desc": "אסטרטגיה והישרדות.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.2",
-    "personalRating": "7.5",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Sushi Go Party!",
-    "cat": "favs",
-    "desc": "בחירת קלפים (דראפט).",
-    "players": "2-8",
-    "recPlayers": "4-6",
-    "rating": "7.5",
-    "personalRating": "6.5",
-    "playtime": "20",
-    "owner": ""
-  },
-  {
-    "name": "Flip 7",
-    "cat": "less_used",
-    "desc": "ניהול סיכונים בקלפים.",
-    "players": "2-10",
-    "recPlayers": "4-6",
-    "rating": "7.5",
-    "personalRating": "7.5",
-    "playtime": "20",
-    "owner": ""
-  },
-  {
-    "name": "Azul",
-    "cat": "favs",
-    "desc": "הנחת אריחים תחרותית.",
-    "players": "2-4",
-    "recPlayers": "2",
-    "rating": "7.8",
-    "personalRating": "7",
-    "playtime": "30-45",
-    "owner": ""
-  },
-  {
-    "name": "Codenames (שם קוד)",
-    "cat": "less_used",
-    "desc": "משחק מילים ואסוציאציות.",
-    "players": "2-8",
-    "recPlayers": "6-8",
-    "rating": "7.5",
-    "personalRating": "7",
-    "playtime": "15",
-    "owner": ""
-  },
-  {
-    "name": "Catan",
-    "cat": "less_used",
-    "desc": "מסחר והתיישבות.",
-    "players": "3-4",
-    "recPlayers": "4",
-    "rating": "7.1",
-    "personalRating": "6",
-    "playtime": "60-120",
-    "owner": ""
-  },
-  {
-    "name": "Ticket to Ride",
-    "cat": "less_used",
-    "desc": "חיבור מסילות רכבת.",
-    "players": "2-5",
-    "recPlayers": "4-5",
-    "rating": "7.4",
-    "personalRating": "6",
-    "playtime": "30-60",
-    "owner": ""
-  },
-  {
-    "name": "Splendor",
-    "cat": "less_used",
-    "desc": "איסוף אבני חן.",
-    "players": "2-4",
-    "recPlayers": "3",
-    "rating": "7.4",
-    "personalRating": "6",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Monopoly Deal",
-    "cat": "less_used",
-    "desc": "מונופול בקלפים.",
-    "players": "2-5",
-    "recPlayers": "3-4",
-    "rating": "6.9",
-    "personalRating": "6",
-    "playtime": "15",
-    "owner": ""
-  },
-  {
-    "name": "Hanabi",
-    "cat": "less_used",
-    "desc": "קלפים שיתופי.",
-    "players": "2-5",
-    "recPlayers": "4",
-    "rating": "7.1",
-    "personalRating": "5",
-    "playtime": "25",
-    "owner": ""
-  },
-  {
-    "name": "Exploding Kittens",
-    "cat": "less_used",
-    "desc": "ניהול סיכונים משעשע.",
-    "players": "2-5",
-    "recPlayers": "4-5",
-    "rating": "6.0",
-    "personalRating": "3",
-    "playtime": "15",
-    "owner": ""
-  },
-  {
-    "name": "Sail",
-    "cat": "favs",
-    "desc": "קלפים שיתופי לשניים.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.6",
-    "playtime": "20",
-    "owner": "",
-    "personalRating": "7.5"
-  },
-  {
-    "name": "5211 (Azul Edition)",
-    "cat": "less_used",
-    "desc": "קלפים מהיר.",
-    "players": "2-5",
-    "recPlayers": "4-5",
-    "rating": "6.7",
-    "playtime": "15",
-    "owner": "",
-    "personalRating": "6.5"
-  },
-  {
-    "name": "Bohnanza: Pirates & Princesses",
-    "cat": "unplayed",
-    "desc": "הרחבה לבוננזה.",
-    "players": "4-5",
-    "recPlayers": "4-5",
-    "rating": "6.5",
-    "playtime": "45",
-    "owner": ""
-  },
-  {
-    "name": "Rebirth",
-    "cat": "friends",
-    "desc": "הנחת אריחים אסטרטגית.",
-    "players": "2-4",
-    "recPlayers": "3-4",
-    "rating": "7.5",
-    "personalRating": "10",
-    "playtime": "45-60",
-    "owner": "נתן"
-  },
-  {
-    "name": "Everdell",
-    "cat": "friends",
-    "desc": "הצבת עובדים ביער.",
-    "players": "1-4",
-    "recPlayers": "3",
-    "rating": "8.0",
-    "personalRating": "9",
-    "playtime": "40-80",
-    "owner": "אדם"
-  },
-  {
-    "name": "Sea Salt & Paper",
-    "cat": "friends",
-    "desc": "איסוף סטים בקלפים.",
-    "players": "2-4",
-    "recPlayers": "2",
-    "rating": "7.5",
-    "personalRating": "9",
-    "playtime": "30",
-    "owner": "נתן"
-  },
-  {
-    "name": "Tiny Towns",
-    "cat": "friends",
-    "desc": "תכנון עיר ממשאבים.",
-    "players": "1-6",
-    "recPlayers": "3-4",
-    "rating": "7.4",
-    "personalRating": "8",
-    "playtime": "45",
-    "owner": "נתן או איילון ועמית"
-  },
-  {
-    "name": "Adulthood",
-    "cat": "friends",
-    "desc": "משחק חוויות חיים.",
-    "players": "2-6",
-    "recPlayers": "3-4",
-    "rating": "7.0",
-    "personalRating": "8",
-    "playtime": "30-45",
-    "owner": "נתן"
-  },
-  {
-    "name": "Harmonies",
-    "cat": "friends",
-    "desc": "יצירת נופים ויצורים.",
-    "players": "1-4",
-    "recPlayers": "2-3",
-    "rating": "7.9",
-    "personalRating": "7",
-    "playtime": "30-45",
-    "owner": "נתן"
-  },
-  {
-    "name": "Scout",
-    "cat": "friends",
-    "desc": "משחק קלפים מבריק.",
-    "players": "2-5",
-    "recPlayers": "4-5",
-    "rating": "7.8",
-    "personalRating": "6",
-    "playtime": "15",
-    "owner": "נתן"
-  },
-  {
-    "name": "Hot Streak",
-    "cat": "friends",
-    "desc": "הימורים ומרוצים.",
-    "players": "2-9",
-    "recPlayers": "4-8",
-    "rating": "8.0",
-    "personalRating": "8",
-    "playtime": "15-30",
-    "owner": "אדם"
-  },
-  {
-    "name": "Magical Athlete",
-    "cat": "friends",
-    "desc": "מרוץ פנטזיה.",
-    "players": "2-6",
-    "recPlayers": "4-5",
-    "rating": "6.5",
-    "personalRating": "7",
-    "playtime": "30-45",
-    "owner": "טל"
-  },
-  {
-    "name": "Agent Avenue",
-    "cat": "friends",
-    "desc": "איסוף סטים זוגי.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.0",
-    "personalRating": "6",
-    "playtime": "20",
-    "owner": "נתן"
-  },
-  {
-    "name": "Sky Team",
-    "cat": "wishlist",
-    "desc": "הטסת מטוס בשיתוף פעולה.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "8.3",
-    "playtime": "15-30",
-    "owner": ""
-  },
-  {
-    "name": "7 Wonders Duel",
-    "cat": "favs",
-    "desc": "אסטרטגיה זוגית.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "8.1",
-    "playtime": "30",
-    "owner": "",
-    "personalRating": "8"
-  },
-  {
-    "name": "Imperium: Classics",
-    "cat": "wishlist",
-    "desc": "בניית חפיסות ציוויליזציה.",
-    "players": "1-4",
-    "recPlayers": "1-2",
-    "rating": "8.1",
-    "playtime": "60-120",
-    "owner": ""
-  },
-  {
-    "name": "Heat: Pedal to the Metal",
-    "cat": "wishlist",
-    "desc": "מרוץ מכוניות.",
-    "players": "1-6",
-    "recPlayers": "5-6",
-    "rating": "8.1",
-    "playtime": "60",
-    "owner": ""
-  },
-  {
-    "name": "Splendor Duel",
-    "cat": "wishlist",
-    "desc": "פיתוח משאבים זוגי.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "8.0",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Vantage",
-    "cat": "wishlist",
-    "desc": "הרפתקה וחקירה.",
-    "players": "1-6",
-    "recPlayers": "2-4",
-    "rating": "8.0",
-    "playtime": "60-90",
-    "owner": ""
-  },
-  {
-    "name": "Watergate",
-    "cat": "wishlist",
-    "desc": "משחק משיכת חבל פוליטי.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.9",
-    "playtime": "30-60",
-    "owner": ""
-  },
-  {
-    "name": "The Crew",
-    "cat": "wishlist",
-    "desc": "קלפים שיתופי בחלל.",
-    "players": "2-5",
-    "recPlayers": "4",
-    "rating": "8.0",
-    "playtime": "20",
-    "owner": ""
-  },
-  {
-    "name": "Zoo Vadis",
-    "cat": "wishlist",
-    "desc": "משא ומתן בגן חיות.",
-    "players": "3-7",
-    "recPlayers": "6-7",
-    "rating": "7.9",
-    "playtime": "20-40",
-    "owner": ""
-  },
-  {
-    "name": "Meadow",
-    "cat": "wishlist",
-    "desc": "איסוף נופים וטבע.",
-    "players": "1-4",
-    "recPlayers": "3",
-    "rating": "7.9",
-    "playtime": "60-90",
-    "owner": ""
-  },
-  {
-    "name": "Blitzkrieg!",
-    "cat": "wishlist",
-    "desc": "מלחמה זוגית מהירה.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.6",
-    "playtime": "20-45",
-    "owner": ""
-  },
-  {
-    "name": "It's a Wonderful World",
-    "cat": "wishlist",
-    "desc": "בניית מנוע ומשאבים.",
-    "players": "1-5",
-    "recPlayers": "3-4",
-    "rating": "7.7",
-    "playtime": "45",
-    "owner": ""
-  },
-  {
-    "name": "7 Wonders",
-    "cat": "wishlist",
-    "desc": "פיתוח תרבויות ודראפטינג.",
-    "players": "2-7",
-    "recPlayers": "4-5",
-    "rating": "7.7",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Tag Team",
-    "cat": "wishlist",
-    "desc": "תחרות זוגות.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.7",
-    "playtime": "15-30",
-    "owner": ""
-  },
-  {
-    "name": "Space Base",
-    "cat": "wishlist",
-    "desc": "בניית מנוע קוביות בחלל.",
-    "players": "2-5",
-    "recPlayers": "4",
-    "rating": "7.6",
-    "playtime": "60",
-    "owner": ""
-  },
-  {
-    "name": "Dorfromantik: The Duel",
-    "cat": "wishlist",
-    "desc": "בניית נופים תחרותית.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.6",
-    "playtime": "30-45",
-    "owner": ""
-  },
-  {
-    "name": "Faraway",
-    "cat": "wishlist",
-    "desc": "משחק קלפים טקטי.",
-    "players": "2-6",
-    "recPlayers": "3-4",
-    "rating": "7.5",
-    "playtime": "15-30",
-    "owner": ""
-  },
-  {
-    "name": "Flamecraft Duals",
-    "cat": "wishlist",
-    "desc": "גרסה זוגית עם דרקונים.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.5",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Jaipur",
-    "cat": "wishlist",
-    "desc": "מסחר מהיר לשניים.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.5",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Bunny Kingdom",
-    "cat": "wishlist",
-    "desc": "שליטה באזורים עם ארנבים.",
-    "players": "2-4",
-    "recPlayers": "4",
-    "rating": "7.5",
-    "playtime": "40-60",
-    "owner": ""
-  },
-  {
-    "name": "Living Forest",
-    "cat": "wishlist",
-    "desc": "בניית מנוע ורוחות טבע.",
-    "players": "2-4",
-    "recPlayers": "3",
-    "rating": "7.4",
-    "playtime": "40",
-    "owner": ""
-  },
-  {
-    "name": "Fantastic Factories",
-    "cat": "wishlist",
-    "desc": "ייצור במפעלים עם קוביות.",
-    "players": "1-5",
-    "recPlayers": "3-4",
-    "rating": "7.4",
-    "playtime": "45-60",
-    "owner": ""
-  },
-  {
-    "name": "Century: Spice Road",
-    "cat": "wishlist",
-    "desc": "בניית מנוע לסחר בתבלינים.",
-    "players": "2-5",
-    "recPlayers": "3-4",
-    "rating": "7.3",
-    "playtime": "30-45",
-    "owner": ""
-  },
-  {
-    "name": "Bärenpark",
-    "cat": "wishlist",
-    "desc": "בניית פארק דובים (פאזל).",
-    "players": "2-4",
-    "recPlayers": "3-4",
-    "rating": "7.3",
-    "playtime": "30-45",
-    "owner": ""
-  },
-  {
-    "name": "Hive",
-    "cat": "favs",
-    "desc": "אסטרטגיה מופשטת עם חרקים.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.3",
-    "playtime": "20",
-    "owner": "",
-    "personalRating": "7.5"
-  },
-  {
-    "name": "Castle Combo",
-    "cat": "wishlist",
-    "desc": "בניית טירה טקטית.",
-    "players": "2-5",
-    "recPlayers": "2-4",
-    "rating": "7.3",
-    "playtime": "20-30",
-    "owner": ""
-  },
-  {
-    "name": "Ragnarocks",
-    "cat": "wishlist",
-    "desc": "שליטה בשטח עם אבנים.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.2",
-    "playtime": "15-30",
-    "owner": ""
-  },
-  {
-    "name": "Carcassonne: The City",
-    "cat": "wishlist",
-    "desc": "קרקסון עם חומות עיר.",
-    "players": "2-4",
-    "recPlayers": "2",
-    "rating": "7.0",
-    "playtime": "60",
-    "owner": ""
-  },
-  {
-    "name": "Lost Cities",
-    "cat": "wishlist",
-    "desc": "משחק קלפים לשניים.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.2",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Port Royal",
-    "cat": "wishlist",
-    "desc": "ניהול סיכונים פיראטים.",
-    "players": "2-5",
-    "recPlayers": "4-5",
-    "rating": "7.2",
-    "playtime": "20-50",
-    "owner": ""
-  },
-  {
-    "name": "Fliptoons",
-    "cat": "favs",
-    "desc": "קלפים דינמי.",
-    "players": "1-4",
-    "recPlayers": "3-4",
-    "rating": "7.2",
-    "playtime": "15-30",
-    "owner": "",
-    "personalRating": "8.5"
-  },
-  {
-    "name": "King of Tokyo",
-    "cat": "wishlist",
-    "desc": "מפלצות ומכות בטוקיו.",
-    "players": "2-6",
-    "recPlayers": "4-5",
-    "rating": "7.1",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Skulls of Sedlec",
-    "cat": "wishlist",
-    "desc": "בניית פירמידות בקלפים.",
-    "players": "2-3",
-    "recPlayers": "2",
-    "rating": "7.1",
-    "playtime": "15",
-    "owner": ""
-  },
-  {
-    "name": "Deep Sea Adventure",
-    "cat": "wishlist",
-    "desc": "סיכונים וצלילה.",
-    "players": "2-6",
-    "recPlayers": "4",
-    "rating": "7.0",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Coloretto",
-    "cat": "wishlist",
-    "desc": "איסוף סטים צבעוניים.",
-    "players": "2-5",
-    "recPlayers": "3-4",
-    "rating": "7.0",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Toy Battle",
-    "cat": "wishlist",
-    "desc": "קרבות צעצועים.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.0",
-    "playtime": "15",
-    "owner": ""
-  },
-  {
-    "name": "Celestia",
-    "cat": "wishlist",
-    "desc": "ניהול סיכונים בשמיים.",
-    "players": "2-6",
-    "recPlayers": "4-6",
-    "rating": "6.8",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Botswana",
-    "cat": "wishlist",
-    "desc": "טקטיקת מניפולציית שוק.",
-    "players": "2-5",
-    "recPlayers": "3-4",
-    "rating": "6.8",
-    "playtime": "30",
-    "owner": ""
-  },
-  {
-    "name": "Eternal Decks",
-    "cat": "wishlist",
-    "desc": "חפיסות שיתופיות.",
-    "players": "1-4",
-    "recPlayers": "2-4",
-    "rating": "6.5",
-    "playtime": "30-60",
-    "owner": ""
-  },
-  {
-    "name": "Beer and bread ",
-    "cat": "friends",
-    "desc": "משחק אסטרטגיה ודראפט לשניים, הדורש ניהול משאבים חכם ואיזון ניקוד בין בירה ללחם.\n",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.3",
-    "playtime": "30-45",
-    "owner": "סימון",
-    "personalRating": "8.5"
-  },
-  {
-    "name": "Throw throw burrito ",
-    "cat": "less_used",
-    "desc": "משחק מסיבה קצבי ופרוע המשלב איסוף סטים מהיר של קלפים עם משחק מחניים, שבו המטרה היא לצבור נקודות במקביל לזריקה והתחמקות מבוריטוס מעוכים שמתעופפים ברחבי החדר.",
-    "players": "2-6",
-    "recPlayers": "4-6",
-    "rating": "6.2",
-    "playtime": "15",
-    "owner": "",
-    "personalRating": "7"
-  },
-  {
-    "name": "Blood rage",
-    "cat": "friends",
-    "desc": "משחק דראפטינג ושליטה אזורית שבו כל שחקן מוביל שבט ויקינגים לקרבות אפיים ולתהילה רגע לפני שסוף העולם (ראגנארוק) מגיע.",
-    "players": "2-5",
-    "recPlayers": "4",
-    "rating": "7.9",
-    "playtime": "60-90",
-    "owner": "טל או עמית ואיילון",
-    "personalRating": "9"
-  },
-  {
-    "name": "King of Tokyo (מלך טוקיו)",
-    "cat": "friends",
-    "desc": "משחק קוביות ומכות בין מפלצות ענק שמנסות להשתלט על העיר.",
-    "players": "2-6",
-    "recPlayers": "4-5",
-    "rating": "7.1",
-    "playtime": "30",
-    "owner": "איילון ועמית",
-    "personalRating": "7"
-  },
-  {
-    "name": "The Quacks of Quedlinburg",
-    "cat": "favs",
-    "desc": "משחק ניהול סיכונים קורע מצחוק שבו רוקחים שיקויים.",
-    "players": "2-4",
-    "recPlayers": "4",
-    "rating": "7.8",
-    "playtime": "45",
-    "personalRating": "8"
-  },
-  {
-    "name": "Carcassonne",
-    "cat": "unplayed",
-    "desc": "קלאסיקה של הנחת אריחים. חובה להכיר, מומלץ עם הרחבות.",
-    "players": "2-5",
-    "recPlayers": "2",
-    "rating": "7.4",
-    "playtime": "30-45"
-  },
-  {
-    "name": "Rivals of Catan",
-    "cat": "favs",
-    "desc": "הגרסה הזוגית המעולה של קטאן המבוססת על קלפים.",
-    "players": "2",
-    "recPlayers": "2",
-    "rating": "7.2",
-    "playtime": "45-60",
-    "personalRating": "7.5"
-  },
-  {
-    "name": "Fire Tower",
-    "cat": "friends",
-    "desc": "משחק מהיר בו מכוונים שריפת יער לעבר המגדלים של היריבים.",
-    "players": "2-4",
-    "recPlayers": "4",
-    "rating": "7.3",
-    "playtime": "15-30",
-    "personalRating": "9",
-    "owner": "אדם"
-  },
-  {
-    "name": "Colt Express",
-    "cat": "favs",
-    "desc": "משחק תכנות מהלכים כאוטי המתרחש על גבי רכבת תלת-ממדית.",
-    "players": "2-6",
-    "recPlayers": "5-6",
-    "rating": "7.2",
-    "playtime": "40",
-    "personalRating": "8"
-  },
-  {
-    "name": "Camel Up",
-    "cat": "friends",
-    "desc": "משחק מרוצי גמלים מטורף ומשעשע המבוסס על הימורים וניהול סיכונים.",
-    "players": "3-8",
-    "recPlayers": "5-6",
-    "rating": "7.3",
-    "playtime": "30-45",
-    "owner": "סימון",
-    "personalRating": "8"
-  }
-];('.tab-btn.active'));
+        const defaultGames = [
+            { name: "Sprawlopolis", cat: "favs", desc: "משחק שיתופי קטן וחכם לבניית עיר.", players: "1-4", recPlayers: "1", rating: "7.6", personalRating: "8", playtime: "15-20", owner: "" },
+            { name: "Bohnanza", cat: "favs", desc: "מסחר ושתילת פולים.", players: "2-7", recPlayers: "4-5", rating: "7.0", personalRating: "10", playtime: "45", owner: "" },
+            { name: "Cubitos", cat: "favs", desc: "מרוץ קוביות אקשן.", players: "2-4", recPlayers: "3-4", rating: "7.6", personalRating: "10", playtime: "45-60", owner: "" },
+            { name: "My Lil' Everdell", cat: "favs", desc: "הצבת עובדים משפחתית.", players: "1-4", recPlayers: "2-3", rating: "7.5", personalRating: "9", playtime: "30", owner: "" },
+            { name: "Cascadia", cat: "favs", desc: "פאזל חיות וטבע.", players: "1-4", recPlayers: "2-3", rating: "8.0", personalRating: "8", playtime: "30-45", owner: "" },
+            { name: "Tacta", cat: "favs", desc: "קלפים אבסטרקטי.", players: "2-8", recPlayers: "2-6", rating: "7.0", personalRating: "8", playtime: "15-30", owner: "" },
+            { name: "Desperate Oasis", cat: "favs", desc: "אסטרטגיה והישרדות.", players: "2", recPlayers: "2", rating: "7.2", personalRating: "7.5", playtime: "30", owner: "" },
+            { name: "Sushi Go Party!", cat: "favs", desc: "בחירת קלפים (דראפט).", players: "2-8", recPlayers: "4-6", rating: "7.5", personalRating: "7.5", playtime: "20", owner: "" },
+            { name: "Flip 7", cat: "favs", desc: "ניהול סיכונים בקלפים.", players: "2-10", recPlayers: "4-6", rating: "7.5", personalRating: "7.5", playtime: "20", owner: "" },
+            { name: "Azul", cat: "less_used", desc: "הנחת אריחים תחרותית.", players: "2-4", recPlayers: "2", rating: "7.8", personalRating: "7", playtime: "30-45", owner: "" },
+            { name: "Codenames (שם קוד)", cat: "less_used", desc: "משחק מילים ואסוציאציות.", players: "2-8", recPlayers: "6-8", rating: "7.5", personalRating: "7", playtime: "15", owner: "" },
+            { name: "Catan", cat: "less_used", desc: "מסחר והתיישבות.", players: "3-4", recPlayers: "4", rating: "7.1", personalRating: "6", playtime: "60-120", owner: "" },
+            { name: "Ticket to Ride", cat: "less_used", desc: "חיבור מסילות רכבת.", players: "2-5", recPlayers: "4-5", rating: "7.4", personalRating: "6", playtime: "30-60", owner: "" },
+            { name: "Splendor", cat: "less_used", desc: "איסוף אבני חן.", players: "2-4", recPlayers: "3", rating: "7.4", personalRating: "6", playtime: "30", owner: "" },
+            { name: "Monopoly Deal", cat: "less_used", desc: "מונופול בקלפים.", players: "2-5", recPlayers: "3-4", rating: "6.9", personalRating: "6", playtime: "15", owner: "" },
+            { name: "Hanabi", cat: "less_used", desc: "קלפים שיתופי.", players: "2-5", recPlayers: "4", rating: "7.1", personalRating: "5", playtime: "25", owner: "" },
+            { name: "Exploding Kittens", cat: "less_used", desc: "ניהול סיכונים משעשע.", players: "2-5", recPlayers: "4-5", rating: "6.0", personalRating: "3", playtime: "15", owner: "" },
+            { name: "Sail", cat: "unplayed", desc: "קלפים שיתופי לשניים.", players: "2", recPlayers: "2", rating: "7.6", playtime: "20", owner: "" },
+            { name: "קטאן יורדי הים", cat: "unplayed", desc: "הרחבה לקטאן.", players: "3-4", recPlayers: "3-4", rating: "7.4", playtime: "90-120", owner: "" },
+            { name: "האי הנעלם", cat: "unplayed", desc: "שיתופי, הישרדות מאי שוקע.", players: "2-4", recPlayers: "3-4", rating: "7.3", playtime: "30", owner: "" },
+            { name: "Coyote", cat: "unplayed", desc: "בלופים והערכות.", players: "3-6", recPlayers: "5-6", rating: "6.9", playtime: "20", owner: "" },
+            { name: "5211 (Azul Edition)", cat: "unplayed", desc: "קלפים מהיר.", players: "2-5", recPlayers: "4-5", rating: "6.7", playtime: "15", owner: "" },
+            { name: "Bohnanza: Pirates & Princesses", cat: "unplayed", desc: "הרחבה לבוננזה.", players: "4-5", recPlayers: "4-5", rating: "6.5", playtime: "45", owner: "" },
+            { name: "Rebirth", cat: "friends", desc: "הנחת אריחים אסטרטגית.", players: "2-4", recPlayers: "3-4", rating: "7.5", personalRating: "10", playtime: "45-60", owner: "חבר" },
+            { name: "Everdell", cat: "friends", desc: "הצבת עובדים ביער.", players: "1-4", recPlayers: "3", rating: "8.0", personalRating: "9", playtime: "40-80", owner: "חבר" },
+            { name: "Sea Salt & Paper", cat: "friends", desc: "איסוף סטים בקלפים.", players: "2-4", recPlayers: "2", rating: "7.5", personalRating: "9", playtime: "30", owner: "חבר" },
+            { name: "Tiny Towns", cat: "friends", desc: "תכנון עיר ממשאבים.", players: "1-6", recPlayers: "3-4", rating: "7.4", personalRating: "8", playtime: "45", owner: "חבר" },
+            { name: "Adulthood", cat: "friends", desc: "משחק חוויות חיים.", players: "2-6", recPlayers: "3-4", rating: "7.0", personalRating: "8", playtime: "30-45", owner: "חבר" },
+            { name: "Harmonies", cat: "friends", desc: "יצירת נופים ויצורים.", players: "1-4", recPlayers: "2-3", rating: "7.9", personalRating: "7", playtime: "30-45", owner: "חבר" },
+            { name: "Scout", cat: "friends", desc: "משחק קלפים מבריק.", players: "2-5", recPlayers: "4-5", rating: "7.8", personalRating: "8", playtime: "15", owner: "חבר" },
+            { name: "Hot Streak", cat: "friends", desc: "הימורים ומרוצים.", players: "2-9", recPlayers: "4-8", rating: "8.0", personalRating: "7", playtime: "15-30", owner: "חבר" },
+            { name: "Magical Athlete", cat: "friends", desc: "מרוץ פנטזיה.", players: "2-6", recPlayers: "4-5", rating: "6.5", personalRating: "6", playtime: "30-45", owner: "חבר" },
+            { name: "Agent Avenue", cat: "friends", desc: "איסוף סטים זוגי.", players: "2", recPlayers: "2", rating: "7.0", personalRating: "7", playtime: "20", owner: "חבר" },
+            { name: "Sky Team", cat: "wishlist", desc: "הטסת מטוס בשיתוף פעולה.", players: "2", recPlayers: "2", rating: "8.3", playtime: "15-30", owner: "" },
+            { name: "7 Wonders Duel", cat: "wishlist", desc: "אסטרטגיה זוגית.", players: "2", recPlayers: "2", rating: "8.1", playtime: "30", owner: "" },
+            { name: "Imperium: Classics", cat: "wishlist", desc: "בניית חפיסות ציוויליזציה.", players: "1-4", recPlayers: "1-2", rating: "8.1", playtime: "60-120", owner: "" },
+            { name: "Heat: Pedal to the Metal", cat: "wishlist", desc: "מרוץ מכוניות.", players: "1-6", recPlayers: "5-6", rating: "8.1", playtime: "60", owner: "" },
+            { name: "Splendor Duel", cat: "wishlist", desc: "פיתוח משאבים זוגי.", players: "2", recPlayers: "2", rating: "8.0", playtime: "30", owner: "" },
+            { name: "Vantage", cat: "wishlist", desc: "הרפתקה וחקירה.", players: "1-6", recPlayers: "2-4", rating: "8.0", playtime: "60-90", owner: "" },
+            { name: "Watergate", cat: "wishlist", desc: "משחק משיכת חבל פוליטי.", players: "2", recPlayers: "2", rating: "7.9", playtime: "30-60", owner: "" },
+            { name: "The Crew", cat: "wishlist", desc: "קלפים שיתופי בחלל.", players: "2-5", recPlayers: "4", rating: "8.0", playtime: "20", owner: "" },
+            { name: "Zoo Vadis", cat: "wishlist", desc: "משא ומתן בגן חיות.", players: "3-7", recPlayers: "6-7", rating: "7.9", playtime: "20-40", owner: "" },
+            { name: "Meadow", cat: "wishlist", desc: "איסוף נופים וטבע.", players: "1-4", recPlayers: "3", rating: "7.9", playtime: "60-90", owner: "" },
+            { name: "Blitzkrieg!", cat: "wishlist", desc: "מלחמה זוגית מהירה.", players: "2", recPlayers: "2", rating: "7.6", playtime: "20-45", owner: "" },
+            { name: "It's a Wonderful World", cat: "wishlist", desc: "בניית מנוע ומשאבים.", players: "1-5", recPlayers: "3-4", rating: "7.7", playtime: "45", owner: "" },
+            { name: "7 Wonders", cat: "wishlist", desc: "פיתוח תרבויות ודראפטינג.", players: "2-7", recPlayers: "4-5", rating: "7.7", playtime: "30", owner: "" },
+            { name: "Tag Team", cat: "wishlist", desc: "תחרות זוגות.", players: "2", recPlayers: "2", rating: "7.7", playtime: "15-30", owner: "" },
+            { name: "Space Base", cat: "wishlist", desc: "בניית מנוע קוביות בחלל.", players: "2-5", recPlayers: "4", rating: "7.6", playtime: "60", owner: "" },
+            { name: "Dorfromantik: The Duel", cat: "wishlist", desc: "בניית נופים תחרותית.", players: "2", recPlayers: "2", rating: "7.6", playtime: "30-45", owner: "" },
+            { name: "Faraway", cat: "wishlist", desc: "משחק קלפים טקטי.", players: "2-6", recPlayers: "3-4", rating: "7.5", playtime: "15-30", owner: "" },
+            { name: "Flamecraft Duals", cat: "wishlist", desc: "גרסה זוגית עם דרקונים.", players: "2", recPlayers: "2", rating: "7.5", playtime: "30", owner: "" },
+            { name: "Jaipur", cat: "wishlist", desc: "מסחר מהיר לשניים.", players: "2", recPlayers: "2", rating: "7.5", playtime: "30", owner: "" },
+            { name: "Bunny Kingdom", cat: "wishlist", desc: "שליטה באזורים עם ארנבים.", players: "2-4", recPlayers: "4", rating: "7.5", playtime: "40-60", owner: "" },
+            { name: "Living Forest", cat: "wishlist", desc: "בניית מנוע ורוחות טבע.", players: "2-4", recPlayers: "3", rating: "7.4", playtime: "40", owner: "" },
+            { name: "Fantastic Factories", cat: "wishlist", desc: "ייצור במפעלים עם קוביות.", players: "1-5", recPlayers: "3-4", rating: "7.4", playtime: "45-60", owner: "" },
+            { name: "Century: Spice Road", cat: "wishlist", desc: "בניית מנוע לסחר בתבלינים.", players: "2-5", recPlayers: "3-4", rating: "7.3", playtime: "30-45", owner: "" },
+            { name: "Bärenpark", cat: "wishlist", desc: "בניית פארק דובים (פאזל).", players: "2-4", recPlayers: "3-4", rating: "7.3", playtime: "30-45", owner: "" },
+            { name: "Hive", cat: "wishlist", desc: "אסטרטגיה מופשטת עם חרקים.", players: "2", recPlayers: "2", rating: "7.3", playtime: "20", owner: "" },
+            { name: "Castle Combo", cat: "wishlist", desc: "בניית טירה טקטית.", players: "2-5", recPlayers: "2-4", rating: "7.3", playtime: "20-30", owner: "" },
+            { name: "Ragnarocks", cat: "wishlist", desc: "שליטה בשטח עם אבנים.", players: "2", recPlayers: "2", rating: "7.2", playtime: "15-30", owner: "" },
+            { name: "Carcassonne: The City", cat: "wishlist", desc: "קרקסון עם חומות עיר.", players: "2-4", recPlayers: "2", rating: "7.0", playtime: "60", owner: "" },
+            { name: "Lost Cities", cat: "wishlist", desc: "משחק קלפים לשניים.", players: "2", recPlayers: "2", rating: "7.2", playtime: "30", owner: "" },
+            { name: "Port Royal", cat: "wishlist", desc: "ניהול סיכונים פיראטים.", players: "2-5", recPlayers: "4-5", rating: "7.2", playtime: "20-50", owner: "" },
+            { name: "Fliptoons", cat: "wishlist", desc: "קלפים דינמי.", players: "1-4", recPlayers: "3-4", rating: "7.2", playtime: "15-30", owner: "" },
+            { name: "King of Tokyo", cat: "wishlist", desc: "מפלצות ומכות בטוקיו.", players: "2-6", recPlayers: "4-5", rating: "7.1", playtime: "30", owner: "" },
+            { name: "Skulls of Sedlec", cat: "wishlist", desc: "בניית פירמידות בקלפים.", players: "2-3", recPlayers: "2", rating: "7.1", playtime: "15", owner: "" },
+            { name: "Deep Sea Adventure", cat: "wishlist", desc: "סיכונים וצלילה.", players: "2-6", recPlayers: "4", rating: "7.0", playtime: "30", owner: "" },
+            { name: "Coloretto", cat: "wishlist", desc: "איסוף סטים צבעוניים.", players: "2-5", recPlayers: "3-4", rating: "7.0", playtime: "30", owner: "" },
+            { name: "Toy Battle", cat: "wishlist", desc: "קרבות צעצועים.", players: "2", recPlayers: "2", rating: "7.0", playtime: "15", owner: "" },
+            { name: "Celestia", cat: "wishlist", desc: "ניהול סיכונים בשמיים.", players: "2-6", recPlayers: "4-6", rating: "6.8", playtime: "30", owner: "" },
+            { name: "Botswana", cat: "wishlist", desc: "טקטיקת מניפולציית שוק.", players: "2-5", recPlayers: "3-4", rating: "6.8", playtime: "30", owner: "" },
+            { name: "Eternal Decks", cat: "wishlist", desc: "חפיסות שיתופיות.", players: "1-4", recPlayers: "2-4", rating: "6.5", playtime: "30-60", owner: "" }
+        ];
+
+        let games = [];
+        
+        // טעינת הנתונים מגרסה 8
+        const savedData = localStorage.getItem('myBoardGamesApp_v8');
+        if (savedData) {
+            games = JSON.parse(savedData);
+        } else {
+            // גיבוי פנימי במקרה של הרצה ראשונה
+            let oldSaves = [];
+            try { oldSaves = JSON.parse(localStorage.getItem('myBoardGamesApp_v7') || localStorage.getItem('myBoardGamesApp_v6') || '[]'); } catch(e){}
+            
+            games = defaultGames.map(dg => {
+                const old = oldSaves.find(o => o.name === dg.name);
+                return old ? {...dg, cat: old.cat, personalRating: old.personalRating || dg.personalRating, owner: old.owner || ""} : dg;
+            });
+            oldSaves.forEach(o => { if(!games.find(g => g.name === o.name)) games.push(o); });
+            localStorage.setItem('myBoardGamesApp_v8', JSON.stringify(games));
+        }
+
+        function saveToLocal() { localStorage.setItem('myBoardGamesApp_v8', JSON.stringify(games)); }
+
+        // פונקציית ייצוא נתונים (גיבוי)
+        function exportData() {
+            const dataToCopy = `// העתק את הבלוק הזה והחלף איתו את המשתנה defaultGames בקוד המקור שלך\nconst defaultGames = ${JSON.stringify(games, null, 2)};`;
+            navigator.clipboard.writeText(dataToCopy).then(() => {
+                alert("הנתונים שלך הועתקו בהצלחה! 📋\n\nפתח את GitHub, חפש את const defaultGames =, והדבק את מה שהועתק במקומו כדי לשמור את כל השינויים שעשית לתמיד.");
+            }).catch(err => {
+                alert("לא הצלחתי להעתיק אוטומטית. אנא העתק ידנית מהקונסול.");
+                console.log(dataToCopy);
+            });
+        }
+
+        let currentCategory = 'favs';
+        let isEditMode = false;
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            document.getElementById('edit-btn').classList.toggle('active-edit', isEditMode);
+            renderGames(currentCategory, document.querySelector('.tab-btn.active'));
         }
 
         function moveGame(event, gameName, newCat) {
@@ -1265,7 +594,7 @@ const defaultGames = [
                             <option value="friends" ${game.cat==='friends'?'selected':''}>אצל חברים</option>
                             <option value="wishlist" ${game.cat==='wishlist'?'selected':''}>ווישליסט</option>
                         </select>
-                        <button class="delete-btn" onclick="deleteGame(event, '${game.name.replace(/'/g, "\\'")}')">🗑️ מחיקה</button>
+                        <button class="delete-btn" onclick="deleteGame(event, '${game.name.replace(/'/g, "\\'")}')">🗑️️ מחיקה</button>
                     </div>${prInput}${ownerInput}</div>`;
             }
 
